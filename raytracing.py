@@ -157,7 +157,7 @@ class Circle(Surface):
         #   2. finding the distance between the given point and the target point
 
 
-
+        # add function : find collision point, then just find distance to that point (could be inherited)
             
             
 
