@@ -135,6 +135,23 @@ class Circle(Surface):
             return self.sense(x_new, y_new, direction)
             # recursive call but only once
 
+    def dist_to_boundary(self, x_input, y_input, direction):
+
+        # on boundary: 0
+        if (x_input - self.getX())**2 + (y_input - self.getY())**2 == self.get_rad()**2:
+            return 0
+
+        # next case: starting within the circle
+        elif (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2:
+            # STEPS GO HERE
+
+        # next case: starting outside the circle, but crossing it
+ #       elif # SOME CONDITION THAT TELLS IF IT CROSSES THE CIRCLE 
+
+        # next case: starting outside the circle, and tangential
+
+        # next: starting outside circle, missing it
+            # this will probably be "else"
 
 class Cell(Surface):
     def __init__(self, surface):
