@@ -97,24 +97,44 @@ class Circle(Surface):
     def get_center(self):
         return self.center
     def sense(self, x_input, y_input, direction):
-        slope_at_point = (2*x_input + 2*self.getX())/((y_input - 2*self.getY())**2 + 1) * (1 / (self.get_rad()**2 + x_input**2 + 2*x_input*self.getX() - self.getX()**2 - self.getY()**2))
+        """Returns whether or not the point is inside the circle. If the point is on the boundary of the circle,
+            its sense depends on whether it's moving into or out of the circle. If the path is tangent to the circle,
+            it is considered within the circle and returns True."""
+        
+        # first: determine the slope at the point, in case it's a boundary case.
+        # doing this here so it doesn't confuse the if/elif/else block later.
+
+        if (self.get_rad()**2 - (x_input-self.getX())**2) < 0:
+            return False
+            # this means it is outside of the circle.
+        elif (self.get_rad()**2 - (x_input-self.getX())**2) == 0:
+            slope_at_point = None
+            # this means it has a vertical slope at the point (so one of the two sides)
+        else:
+            slope_at_point = (self.getX()-x_input)/(self.get_rad()**2 - (x_input-self.getX())**2)**0.5           
+
+        # first case: it is NOT along the edges
         if (x_input - self.getX())**2 + (y_input - self.getY())**2 != self.get_rad()**2:
             return (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2
-        elif math.atan(slope_at_point) == math.radians(direction):
+            # just return if it's within or outside the circle
+
+        # next case: the circle has a vertical slope at (x,y), which matches the direction it is moving - special case of tangency.
+        elif slope_at_point == None and math.radians(direction) == math.pi/2 or slope_at_point == None and math.radians(direction) == 3*math.pi/2:
+            #it's tangent, with a vertical slope
+            return True
+
+        # need to check for tangency again here or else we get false negatives
+        elif type(slope_at_point) == float and math.atan(slope_at_point) == math.radians(direction):
             # this means it is tangent to the circle
             return True
+
+        # final case: the slope exists (is not infinite). check to see what happens if we move it over a little.
         else:
             x_new = x_input + 0.0001*math.cos(math.radians(direction))
             y_new = y_input + 0.0001*math.sin(math.radians(direction))
-            print x_new, y_new, ((x_new - self.getX())**2 + (y_new - self.getY())**2) < self.get_rad()**2
             return self.sense(x_new, y_new, direction)
-    
-    # NEED TO CHECK FOR TANGENT CASES but how? check direction to compare with the slope at point x_input and y_input
-    # derivative at this point:
+            # recursive call but only once
 
-        # (2x + 2h)/((y - 2k)**2 + 1) * (1 / (r**2 + x**2 + 2xh - h**2 - k**2))
-
-    # math.atan(slope) == math.radians(direction) 
 
 class Cell(Surface):
     def __init__(self, surface):

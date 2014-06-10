@@ -193,7 +193,7 @@ def testCircle():
     assert C2.sense(1, 6, -90)
     assert C3.sense(-4, 10, 0)
 
-    print 'why'
+
     assert not C1.sense(1, 0, 0)
     assert not C2.sense(3, 4, 20)
     assert not C3.sense(2, 10, 45)
