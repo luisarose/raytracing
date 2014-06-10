@@ -143,10 +143,26 @@ class Circle(Surface):
 
         # next case: starting within the circle
         elif (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2:
-            # STEPS GO HERE
+            slope = math.tan(math.radians(direction))
+            b = y_input - slope*x_input
+            # referring to y = mx + b
+
+
+        # steps to accomplish:
+        #   1. finding the x,y coords of the point on the circle's edge that is
+        #      along the trajectory of the ray
+        #           (this means: following direction, using y = mx + b, etc.
+        #           to find a point that fits the circle equation and the
+        #           linear equation (found using direction))
+        #   2. finding the distance between the given point and the target point
+
+
+
+            
+            
 
         # next case: starting outside the circle, but crossing it
- #       elif # SOME CONDITION THAT TELLS IF IT CROSSES THE CIRCLE 
+            # SOME CONDITION THAT TELLS IF IT CROSSES THE CIRCLE 
 
         # next case: starting outside the circle, and tangential
 
