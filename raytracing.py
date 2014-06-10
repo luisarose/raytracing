@@ -99,11 +99,19 @@ class Circle(Surface):
     def sense(self, x_input, y_input, direction):
         if (x_input - self.getX())**2 + (y_input - self.getY())**2 != self.get_rad()**2:
             return (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2
+        slope_at_point = -x_input/(self.get_rad()**2 - x_input**2)**0.5
+        elif math.degrees(math.atan(slope_at_point)) = direction:
+            # this means it is tangent to the circle
+            return True
         else:
             x_new = x_input + 0.0001*math.cos(math.radians(direction))
             y_new = y_input + 0.0001*math.sin(math.radians(direction))
             return (x_new - self.getX())**2 + (y_new - self.getY())**2 < self.get_rad()**2
     
+    # NEED TO CHECK FOR TANGENT CASES but how? check direction to compare with the slope at point x_input and y_input
+    # derivative at this point = -x/(r^2 - x^2)^.5 = slope (dy/dx)
+    # math.atan(slope) == math.radians(direction) 
+
 class Cell(Surface):
     def __init__(self, surface):
         self.surfaces = list(surface)

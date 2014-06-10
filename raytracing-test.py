@@ -196,6 +196,13 @@ def testCircle():
     assert not C1.sense(1, 0, 0)
     assert not C2.sense(3, 4, 20)
     assert not C3.sense(2, 10, 45)
+
+    # test sense for cases with tangent lines - should be
+    # considered to be TRUE
+
+    assert C1.sense(1, 0, 90)
+    assert C2.sense(-1, 4, 270)
+    assert C3.sense(-1, 13, 0)
         
 
     # test dist_to_boundary
