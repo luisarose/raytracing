@@ -182,14 +182,20 @@ def testCircle():
     assert not C2.sense(0, 1, 0)
     assert not C2.sense(3, 3, 0)
 
-    assert not C3.sense(4, 10)
-    assert not C3.sense(2, 0)
-    assert not C3.sense(1.8, 6)
+    assert not C3.sense(4, 1, 0)
+    assert not C3.sense(2, 0, 0)
+    assert not C3.sense(1.8, 6, 0)
 
     # test sense for cases on the edge - dependent on motion
     # these test cases are either entering or exiting.
+
+    assert C1.sense(1, 0, 180)
+    assert C2.sense(1, 6, -90)
+    assert C3.sense(-4, 10, 0)
     
-    assert not C1.sense(1, 0)
+    assert not C1.sense(1, 0, 0)
+    assert not C2.sense(3, 4, 20)
+    assert not C3.sense(2, 10, 45)
         
 
     # test dist_to_boundary
