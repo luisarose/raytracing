@@ -28,6 +28,16 @@ class XPlane(Surface):
         self.x_val = x_val
     def getX(self):
         return self.x_val
+    def __lt__(self, xplane):
+        assert isinstance(xplane, XPlane)
+        return self.getX() < xplane.getX()
+    def __gt__(self, xplane):
+        assert isinstance(xplane, XPlane)
+        return self.getX() > xplane.getX()
+    def __eq__(self, xplane):
+        if not isinstance(xplane, XPlane):
+            return False
+        return self.getX() == xplane.getX()
     def sense(self, x_input, y_input, direction):
         # direction is measured in degrees
         # CCW from positive x-axis
@@ -96,6 +106,16 @@ class YPlane(Surface):
         self.y_val = y_val
     def getY(self):
         return self.y_val
+    def __lt__(self, yplane):
+        assert isinstance(yplane, YPlane)
+        return self.getY() < yplane.getY()
+    def __gt__(self, yplane):
+        assert isinstance(yplane, YPlane)
+        return self.getY() > yplane.getY()
+    def __eq__(self, yplane):
+        if not isinstance(yplane, YPlane):
+            return False
+        return self.getY() == yplane.getY()
     def sense(self, x_input, y_input, direction):
         if y_input != self.getY():
             return y_input > self.getY()
@@ -282,14 +302,72 @@ class Circle(Surface):
             # this will probably be "else"
 
 class Cell(Surface):
+    """Takes one surface as initial input, the rest have to be added.
+
+        Currently assumes the shape is a circle or rectangle.
+
+        Surfaces are stored in a list of self.surfaces."""
     def __init__(self, surface):
-        self.surfaces = list(surface)
-    def add_surface(new_surface):
+        self.surfaces = [surface]
+    def add_surface(self,new_surface):
         self.surfaces.append(new_surface)
-    def get_surfaces():
+    def get_surfaces(self):
         return self.surfaces
-    def am_i_in_cell(self, x, y):
-        if len(self.get_surfaces()) == 1:
-            return self.get_surfaces()[0].sense(x,y)
+    def am_i_in_cell(self, x, y, direction):
+
+        # circle cell:
+        if len(self.get_surfaces()) == 1:            
+            # if the cell only has one surface, just return
+            # whether or not its 'sense' of that is positive.
+            # this is really only meaningful for circles.
+            return self.get_surfaces()[0].sense(x, y, direction)
+        
         else:
-            pass # not completed
+            
+            # right now this only supports rectangles (2 XPlanes and 2 YPlanes) and circles
+            surface_dict = {'min_x':None, 'max_x':None, 'min_y':None, 'max_y':None, 'circle':None}
+            
+            for surface in self.get_surfaces():
+                if isinstance(surface, XPlane):
+                    if surface_dict.get('min_x') == None:
+                        surface_dict['min_x'] = surface
+                    elif surface < surface_dict.get('min_x'):
+                        surface_dict['max_x'] = surface_dict['min_x']
+                        surface_dict['min_x'] = surface
+                    else:
+                        surface_dict['max_x'] = surface
+                        
+                if isinstance(surface, YPlane):
+                    if surface_dict.get('min_y') == None:
+                        surface_dict['min_y'] = surface
+                    elif surface < surface_dict.get('min_y'):
+                        surface_dict['max_y'] = surface_dict['min_y']
+                        surface_dict['min_y'] = surface
+                    else:
+                        surface_dict['max_y'] = surface
+                if isinstance(surface, Circle):
+                    surface_dict['circle'] = surface
+
+            xmax = surface_dict['max_x']
+            xmin = surface_dict['min_x']
+            ymax = surface_dict['max_y']
+            ymin = surface_dict['min_y']
+            circle = surface_dict['circle']
+
+
+            # plain rectangle case
+            if circle == None:
+                # return true only if sense passes for the minimums AND fails for the maximums.
+                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction)
+                            
+
+            # rectangle outside a circle
+            else:
+
+                # this is for debugging
+##                print 'xmin:',xmin.getX(), '; xmin sense', xmin.sense(x, y, direction)
+##                print 'ymin:',ymin.getY(), '; ymin sense', ymin.sense(x, y, direction)
+##                print 'xmax:',xmax.getX(), '; xmax sense', xmax.sense(x, y, direction)
+##                print 'ymax:',ymax.getY(), '; ymax sense', ymax.sense(x, y, direction)
+##                print 'circle sense', circle.sense(x, y, direction)
+                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction) and not circle.sense(x, y, direction)
