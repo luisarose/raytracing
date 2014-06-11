@@ -208,6 +208,18 @@ def testCircle():
 
     # test dist_to_boundary
 
+    assert C1.dist_to_boundary(0, 0, 0) == 1
+    assert C1.dist_to_boundary(2, 0, 180) == 1
+    assert C1.dist_to_boundary(0, 2, 0) == None
+    assert C1.dist_to_boundary(0, 0, 38) == 1
+
+    assert C2.dist_to_boundary(1, 4, 280) == 2
+    assert C2.dist_to_boundary(2, 4, 0) == 1
+    assert C2.dist_to_boundary(1, 6, 200) == 0
+    assert C2.dist_to_boundary(1, 5, 90) == 1
+
+    # good enough for me! it works.
+
 def testCell():
 
     # create testable cells

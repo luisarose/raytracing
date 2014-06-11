@@ -209,9 +209,44 @@ class Circle(Surface):
 
     def find_collision_point(self, x_input, y_input, direction):
 
-        # refer to notes
 
+        # on boundary: return point
+        if (x_input - self.getX())**2 + (y_input - self.getY())**2 == self.get_rad()**2:
+            return (x_input, y_input)
 
+        # just to clean things up
+        dir_rad = math.radians(direction)
+        x_0 = self.getX()
+        y_0 = self.getY()
+        r = self.get_rad()
+
+        # equation to find d:
+        # d^2 + 2d(xcos + ysin - hcos - ksin) + (x-h)^2 + (y-k)^2 - r^2 = 0
+
+        a = 1
+        b = 2*(x_input*math.cos(dir_rad) + y_input*math.sin(dir_rad) - x_0*math.cos(dir_rad) - y_0*math.sin(dir_rad))
+        c = (x_input - x_0)**2 + (y_input - y_0)**2 - r**2
+
+        if (b**2 - 4*c) < 0:
+            # no collision
+            #print 'quadratic showed no collisions'
+            return None
+
+        d_plus = (-b + (b**2 - 4*c)**0.5)/2
+        d_minus = (-b - (b**2 - 4*c)**0.5)/2
+
+        if d_minus > 0:
+            return (x_input + d_minus*math.cos(dir_rad), y_input + d_minus*math.sin(dir_rad))
+            # since that would be the first collision, shorter distance
+            
+        elif d_plus > 0:
+            return (x_input + d_plus*math.cos(dir_rad), y_input + d_plus*math.sin(dir_rad))
+            # check to make sure it's a positive distance
+            
+        else:
+            #print 'all collisions were negative direction'
+            return None
+                
 ##    def dist_to_boundary(self, x_input, y_input, direction):
 ##
 ##        # on boundary: 0
