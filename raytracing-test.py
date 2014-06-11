@@ -11,61 +11,61 @@ def testXPlane():
     
     # test the sense function for non-boundary cases
     # direction is not important here
-    assert not XP1.sense(-0.01, 0)
-    assert XP1.sense(0.00001, 0)
-    assert not XP2.sense(1.9, 0)
-    assert XP2.sense(2.01, 0)
-    assert not XP3.sense(-2.01, 0)
-    assert XP3.sense(-1.99, 0)
+    assert not XP1.sense(-0.01, 0, 0)
+    assert XP1.sense(0.00001, 0, 0)
+    assert not XP2.sense(1.9, 0, 0)
+    assert XP2.sense(2.01, 0, 0)
+    assert not XP3.sense(-2.01, 0, 0)
+    assert XP3.sense(-1.99, 0, 0)
 
     # test sense function for boundary cases with
     # a direction that is NOT vertical (should depend
     # on if the point is traveling left or right)
 
     # XP1
-    assert XP1.sense(0, -89)
-    assert XP1.sense(0, 89)
-    assert not XP1.sense(0, 90.1)
-    assert not XP1.sense(0, -91)
+    assert XP1.sense(0, 0, -89)
+    assert XP1.sense(0, 0, 89)
+    assert not XP1.sense(0, 0, 90.1)
+    assert not XP1.sense(0, 0, -91)
 
     # XP2
-    assert XP2.sense(2, -89)
-    assert XP2.sense(2, 89.99)
-    assert not XP2.sense(2, 90.001)
-    assert not XP2.sense(2, -91)
+    assert XP2.sense(2, 0, -89)
+    assert XP2.sense(2, 0, 89.99)
+    assert not XP2.sense(2, 0, 90.001)
+    assert not XP2.sense(2, 0, -91)
 
     # XP3
-    assert XP3.sense(-2, -89)
-    assert XP3.sense(-2, 89)
-    assert not XP3.sense(-2, 91)
-    assert not XP3.sense(-2, -91)
+    assert XP3.sense(-2, 0, -89)
+    assert XP3.sense(-2, 0, 89)
+    assert not XP3.sense(-2, 0, 91)
+    assert not XP3.sense(-2, 0, -91)
 
     # test sense function on boundary with direction
     # directly along plane (direction = 90 or 270)
 
-    assert XP1.sense(0, 90)
-    assert XP1.sense(0, 270)
-    assert XP2.sense(2, 90)
-    assert XP2.sense(2, 270)
-    assert XP3.sense(-2, 90)
-    assert XP3.sense(-2, 270)
+    assert XP1.sense(0, 0, 90)
+    assert XP1.sense(0, 0, 270)
+    assert XP2.sense(2, 0, 90)
+    assert XP2.sense(2, 0, 270)
+    assert XP3.sense(-2, 0, 90)
+    assert XP3.sense(-2, 0, 270)
 
     # test dist_to_boundary
 
-    assert XP1.dist_to_boundary(1, 180) == 1
-    assert XP1.dist_to_boundary(1, 0) == None
-    assert XP1.dist_to_boundary(1, 150) > 1
-    assert XP1.dist_to_boundary(-2, 0) == 2
+    assert XP1.dist_to_boundary(1, 0, 180) == 1
+    assert XP1.dist_to_boundary(1, 0, 0) == None
+    assert XP1.dist_to_boundary(1, 0, 150) > 1
+    assert XP1.dist_to_boundary(-2, 0, 0) == 2
 
-    assert XP2.dist_to_boundary(1, 180) == None
-    assert XP2.dist_to_boundary(1, 0) == 1
-    assert XP2.dist_to_boundary(1, 30) > 1
-    assert XP2.dist_to_boundary(-2, 0) == 4
+    assert XP2.dist_to_boundary(1, 0, 180) == None
+    assert XP2.dist_to_boundary(1, 0, 0) == 1
+    assert XP2.dist_to_boundary(1, 0, 30) > 1
+    assert XP2.dist_to_boundary(-2, 0, 0) == 4
 
-    assert XP3.dist_to_boundary(1, 180) == 3
-    assert XP3.dist_to_boundary(1, 0) == None
-    assert XP3.dist_to_boundary(1, 150) > 3
-    assert XP3.dist_to_boundary(-2, 180) == 0
+    assert XP3.dist_to_boundary(1, 0, 180) == 3
+    assert XP3.dist_to_boundary(1, 0, 0) == None
+    assert XP3.dist_to_boundary(1, 0, 150) > 3
+    assert XP3.dist_to_boundary(-2, 0, 180) == 0
 
 def testYPlane():
     
@@ -79,61 +79,61 @@ def testYPlane():
     
     # test the sense function for non-boundary cases
     # direction is not important here
-    assert not YP1.sense(-0.01, 0)
-    assert YP1.sense(0.00001, 0)
-    assert not YP2.sense(1.9, 0)
-    assert YP2.sense(2.01, 0)
-    assert not YP3.sense(-2.01, 0)
-    assert YP3.sense(-1.99, 0)
+    assert not YP1.sense(0, -0.01, 0)
+    assert YP1.sense(0, 0.00001, 0)
+    assert not YP2.sense(0, 1.9, 0)
+    assert YP2.sense(0, 2.01, 0)
+    assert not YP3.sense(0, -2.01, 0)
+    assert YP3.sense(0, -1.99, 0)
 
     # test sense function for boundary cases with
     # a direction that is NOT vertical (should depend
     # on if the point is traveling up or down)
 
     # YP1
-    assert YP1.sense(0, 0.1)
-    assert YP1.sense(0, 179.9)
-    assert not YP1.sense(0, -1)
-    assert not YP1.sense(0, -179)
+    assert YP1.sense(0, 0, 0.1)
+    assert YP1.sense(0, 0, 179.9)
+    assert not YP1.sense(0, 0, -1)
+    assert not YP1.sense(0, 0, -179)
 
     # YP2
-    assert YP2.sense(2, 0.1)
-    assert YP2.sense(2, 179.99)
-    assert not YP2.sense(2, -0.01)
-    assert not YP2.sense(2, -179)
+    assert YP2.sense(0, 2, 0.1)
+    assert YP2.sense(0, 2, 179.99)
+    assert not YP2.sense(0, 2, -0.01)
+    assert not YP2.sense(0, 2, -179)
 
     # YP3
-    assert YP3.sense(-2, 0.1)
-    assert YP3.sense(-2, 179.9)
-    assert not YP3.sense(-2, -0.01)
-    assert not YP3.sense(-2, -179)
+    assert YP3.sense(0, -2, 0.1)
+    assert YP3.sense(0, -2, 179.9)
+    assert not YP3.sense(0, -2, -0.01)
+    assert not YP3.sense(0, -2, -179)
 
     # test sense function on boundary with direction
     # directly along plane (direction = 0 or 180)
 
-    assert YP1.sense(0, 0)
-    assert YP1.sense(0, 180)
-    assert YP2.sense(2, 0)
-    assert YP2.sense(2, 180)
-    assert YP3.sense(-2, 0)
-    assert YP3.sense(-2, 180)
+    assert YP1.sense(0, 0, 0)
+    assert YP1.sense(0, 0, 180)
+    assert YP2.sense(0, 2, 0)
+    assert YP2.sense(0, 2, 180)
+    assert YP3.sense(0, -2, 0)
+    assert YP3.sense(0, -2, 180)
 
     # test dist_to_boundary
 
-    assert YP1.dist_to_boundary(1, 270) == 1
-    assert YP1.dist_to_boundary(1, 0) == None
-    assert YP1.dist_to_boundary(1, -20) > 1
-    assert YP1.dist_to_boundary(-2, 90) == 2
+    assert YP1.dist_to_boundary(0, 1, 270) == 1
+    assert YP1.dist_to_boundary(0, 1, 0) == None
+    assert YP1.dist_to_boundary(0, 1, -20) > 1
+    assert YP1.dist_to_boundary(0, -2, 90) == 2
 
-    assert YP2.dist_to_boundary(1, 90) == 1
-    assert YP2.dist_to_boundary(1, -90) == None
-    assert YP2.dist_to_boundary(1, 30) > 1
-    assert YP2.dist_to_boundary(-2, 90) == 4
+    assert YP2.dist_to_boundary(0, 1, 90) == 1
+    assert YP2.dist_to_boundary(0, 1, -90) == None
+    assert YP2.dist_to_boundary(0, 1, 30) > 1
+    assert YP2.dist_to_boundary(0, -2, 90) == 4
 
-    assert YP3.dist_to_boundary(1, 180) == None
-    assert YP3.dist_to_boundary(1, 0) == None
-    assert YP3.dist_to_boundary(1, -30) > 3
-    assert YP3.dist_to_boundary(-2, 90) == 0
+    assert YP3.dist_to_boundary(0, 1, 180) == None
+    assert YP3.dist_to_boundary(0, 1, 0) == None
+    assert YP3.dist_to_boundary(0, 1, -30) > 3
+    assert YP3.dist_to_boundary(0, -2, 90) == 0
 
 
 def testCircle():

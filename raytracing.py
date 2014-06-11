@@ -3,7 +3,15 @@ import math
 class Surface():
     # superclass containing different types of surface
     # i.e. planes, circles, squares, etc.
-    pass        
+
+    # ADD MORE INHERITANCE -- i.e. implement more generalized surface stuff
+    # see emailed attachment for more information
+    
+    # ideally, make it so a meaningful Surface object can be created
+    # rather than only XPlane, YPlane, Circle objects
+
+    pass
+        
         
 
 # for an x-plane (a plane at a given x-val), the sense test checks
@@ -13,7 +21,7 @@ class XPlane(Surface):
         self.x_val = x_val
     def getX(self):
         return self.x_val
-    def sense(self, x_input, direction):
+    def sense(self, x_input, y_input, direction):
         # direction is measured in degrees
         # CCW from positive x-axis
         if x_input != self.getX():
@@ -25,14 +33,14 @@ class XPlane(Surface):
             # if the direction is directly along the plane,
             # consider this case to be positive/"to the right"
             return True
-    def dist_to_boundary(self, x_input, direction):
+    def dist_to_boundary(self, x_input, y_input, direction):
         if self.getX() == x_input:
             return 0
-        elif self.sense(x_input, direction) and math.cos(math.radians(direction)) > 0:
+        elif self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) > 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
             return None
-        elif not self.sense(x_input, direction) and math.cos(math.radians(direction)) < 0:
+        elif not self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) < 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
             return None
@@ -52,7 +60,7 @@ class YPlane(Surface):
         self.y_val = y_val
     def getY(self):
         return self.y_val
-    def sense(self, y_input, direction):
+    def sense(self, x_input, y_input, direction):
         if y_input != self.getY():
             return y_input > self.getY()
         elif direction != 0 and direction != 180:
@@ -62,14 +70,14 @@ class YPlane(Surface):
             # if the direction is directly along the plane,
             # consider this case to be positive/"to the right"
             return True
-    def dist_to_boundary(self, y_input, direction):
+    def dist_to_boundary(self, x_input, y_input, direction):
         if self.getY() == y_input:
             return 0
-        if self.sense(y_input, direction) and math.sin(math.radians(direction)) > 0:
+        if self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) > 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
             return None
-        elif not self.sense(y_input, direction) and math.sin(math.radians(direction)) < 0:
+        elif not self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) < 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
             return None
