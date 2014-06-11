@@ -301,7 +301,7 @@ class Circle(Surface):
         # next: starting outside circle, missing it
             # this will probably be "else"
 
-class Cell(Surface):
+class Cell(): # don't have it inherit
     """Takes one surface as initial input, the rest have to be added.
 
         Currently assumes the shape is a circle or rectangle.
@@ -309,8 +309,10 @@ class Cell(Surface):
         Surfaces are stored in a list of self.surfaces."""
     def __init__(self, surface):
         self.surfaces = [surface]
-    def add_surface(self,new_surface):
-        self.surfaces.append(new_surface)
+    def add_surface(self,new_surface, sense):
+        """sense: -1 for left / inside, 1 for right / outside"""
+        self.surfaces.append(new_surface, sense)
+        
     def get_surfaces(self):
         return self.surfaces
     def am_i_in_cell(self, x, y, direction):
@@ -371,3 +373,22 @@ class Cell(Surface):
 ##                print 'ymax:',ymax.getY(), '; ymax sense', ymax.sense(x, y, direction)
 ##                print 'circle sense', circle.sense(x, y, direction)
                 return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction) and not circle.sense(x, y, direction)
+
+            # TO DO:
+
+            # generalize Surface so it could actually be used
+            # generalize cells (squares in circles, curved sides? etc.)
+            # basically just generalize and clean up
+
+            # also plotting. use matplotlib.
+
+            # also read up on unittest vs nose
+
+            # cells don't have to be closed (i.e. everything outside a circle, or everythign outside 3 planes
+            # adding surface splits things into half space
+            # in_cell: check each surface (check all constraints)
+            
+            # ADD SURFACE SHOULD INCLUDE DESIRED SENSE (duh)
+            # distance to each surface - take min
+
+            # give it a series of surfaces, 
