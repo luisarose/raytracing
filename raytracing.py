@@ -10,8 +10,15 @@ class Surface():
     # ideally, make it so a meaningful Surface object can be created
     # rather than only XPlane, YPlane, Circle objects
 
-    pass
-        
+    
+    def dist_to_collision(self, x_input, y_input, x_col, y_col):
+        return ((x_input - x_col)**2 + (y_input - y_col)**2)**0.5
+    
+    def dist_to_boundary(self, x_input, y_input, direction):
+        if self.find_collision_point(x_input, y_input, direction) == None:
+            return None
+        x_col, y_col = self.find_collision_point(x_input, y_input, direction)
+        return self.dist_to_collision(x_input, y_input, x_col, y_col)
         
 
 # for an x-plane (a plane at a given x-val), the sense test checks
@@ -33,9 +40,11 @@ class XPlane(Surface):
             # if the direction is directly along the plane,
             # consider this case to be positive/"to the right"
             return True
-    def dist_to_boundary(self, x_input, y_input, direction):
+    def find_collision_point(self, x_input, y_input, direction):
+        """Returns the (x,y) location of the collision point in current direction."""
         if self.getX() == x_input:
-            return 0
+            # it is already on the boundary
+            return (x_input, y_input)
         elif self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) > 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
@@ -50,11 +59,38 @@ class XPlane(Surface):
         else:
             # hypotenuse = adj/cos
             # absolute value for distance
-            return abs((x_input - self.getX())/math.cos(math.radians(direction)))
-        
+            x_col = self.getX()
+            y_col = y_input + (self.getX() - x_input)*math.tan(math.radians(direction))
+            return (x_col, y_col)
 
-# for a y-plane, the sense test checks to see if the y-coordinate
-# is greater than the plane's y-value
+# this block is now unnecessary
+        
+##    def dist_to_boundary(self, x_input, y_input, direction):
+##        if self.getX() == x_input:
+##            return 0
+##        elif self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) > 0:
+##            # this means it will never cross the boundary
+##            # so it returns None, meaning infinity
+##            return None
+##        elif not self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) < 0:
+##            # this means it will never cross the boundary
+##            # so it returns None, meaning infinity
+##            return None
+##        elif math.cos(math.radians(direction)) == 0:
+##            # this means it is moving parallel to the plane and will never reach it
+##            return None
+##        else:
+##            # hypotenuse = adj/cos
+##            # absolute value for distance
+##            return abs((x_input - self.getX())/math.cos(math.radians(direction)))
+
+##    def dist_to_boundary(self, x_input, y_input, direction):
+##        if self.find_collision_point(x_input, y_input, direction) == None:
+##            return None
+##        x_col, y_col = self.find_collision_point(x_input, y_input, direction)
+##        return self.dist_to_collision(x_input, y_input, x_col, y_col)
+
+
 class YPlane(Surface):
     def __init__(self, y_val):
         self.y_val = y_val
@@ -70,25 +106,53 @@ class YPlane(Surface):
             # if the direction is directly along the plane,
             # consider this case to be positive/"to the right"
             return True
-    def dist_to_boundary(self, x_input, y_input, direction):
+
+    def find_collision_point(self, x_input, y_input, direction):
+        """Returns the (x,y) location of the collision point in current direction."""
         if self.getY() == y_input:
-            return 0
+            # it is already on the boundary
+            return (x_input, y_input)
+        
         if self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) > 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
             return None
+        
         elif not self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) < 0:
             # this means it will never cross the boundary
             # so it returns None, meaning infinity
             return None
+        
         elif math.sin(math.radians(direction)) == 0:
             # this means it is moving parallel to the plane and will never reach it
             return None
+        
         else:
-            # hypotenuse = opp/sin
-            # absolute value for distance
-            return abs((y_input - self.getY())/math.sin(math.radians(direction)))
+            # using trig to find the collision point with the known Y-value
+            x_col = x_input + (self.getY() - y_input)/math.tan(math.radians(direction))
+            y_col = self.getY()
+            return (x_col, y_col)
 
+    
+##    def dist_to_boundary(self, x_input, y_input, direction):
+##        if self.getY() == y_input:
+##            return 0
+##        if self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) > 0:
+##            # this means it will never cross the boundary
+##            # so it returns None, meaning infinity
+##            return None
+##        elif not self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) < 0:
+##            # this means it will never cross the boundary
+##            # so it returns None, meaning infinity
+##            return None
+##        elif math.sin(math.radians(direction)) == 0:
+##            # this means it is moving parallel to the plane and will never reach it
+##            return None
+##        else:
+##            # hypotenuse = opp/sin
+##            # absolute value for distance
+##            return abs((y_input - self.getY())/math.sin(math.radians(direction)))
+##
 
 class Circle(Surface):
     def __init__(self, x_0, y_0, r):
@@ -143,17 +207,22 @@ class Circle(Surface):
             return self.sense(x_new, y_new, direction)
             # recursive call but only once
 
-    def dist_to_boundary(self, x_input, y_input, direction):
+    def find_collision_point(self, x_input, y_input, direction):
 
-        # on boundary: 0
-        if (x_input - self.getX())**2 + (y_input - self.getY())**2 == self.get_rad()**2:
-            return 0
+        # refer to notes
 
-        # next case: starting within the circle
-        elif (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2:
-            slope = math.tan(math.radians(direction))
-            b = y_input - slope*x_input
-            # referring to y = mx + b
+
+##    def dist_to_boundary(self, x_input, y_input, direction):
+##
+##        # on boundary: 0
+##        if (x_input - self.getX())**2 + (y_input - self.getY())**2 == self.get_rad()**2:
+##            return 0
+##
+##        # next case: starting within the circle
+##        elif (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2:
+##            slope = math.tan(math.radians(direction))
+##            b = y_input - slope*x_input
+##            # referring to y = mx + b
 
 
         # steps to accomplish:
