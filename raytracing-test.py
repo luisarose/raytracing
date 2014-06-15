@@ -158,52 +158,52 @@ def testCircle():
     assert C3.get_rad() == 3
 
     # test sense for points that are inside the circle
-    assert C1.sense(0, 0, 0)
-    assert C1.sense(0, 0.75, 0)
-    assert C1.sense (0.99, 0, 0)
-    assert C1.sense(0.5, -0.5, 0)
+    assert not C1.sense(0, 0, 0)
+    assert not C1.sense(0, 0.75, 0)
+    assert not C1.sense (0.99, 0, 0)
+    assert not C1.sense(0.5, -0.5, 0)
 
-    assert C2.sense(1, 4, 0)
-    assert C2.sense(2.5, 4, 0)
-    assert C2.sense(1, 5.9, 0)
-    assert C2.sense(2, 3, 0)
+    assert not C2.sense(1, 4, 0)
+    assert not C2.sense(2.5, 4, 0)
+    assert not C2.sense(1, 5.9, 0)
+    assert not C2.sense(2, 3, 0)
     
-    assert C3.sense(-1, 10, 0)
-    assert C3.sense(-1, 8, 0)
-    assert C3.sense(1.8, 10, 0)
-    assert C3.sense(1, 9, 0)
+    assert not C3.sense(-1, 10, 0)
+    assert not C3.sense(-1, 8, 0)
+    assert not C3.sense(1.8, 10, 0)
+    assert not C3.sense(1, 9, 0)
 
     # test sense for points that are outside the circle
-    assert not C1.sense(0, 5, 0)
-    assert not C1.sense(2, 2, 0)
-    assert not C1.sense (0.99, 1.1, 0)
+    assert C1.sense(0, 5, 0)
+    assert C1.sense(2, 2, 0)
+    assert C1.sense (0.99, 1.1, 0)
 
-    assert not C2.sense(-1, 5, 0)
-    assert not C2.sense(0, 1, 0)
-    assert not C2.sense(3, 3, 0)
+    assert C2.sense(-1, 5, 0)
+    assert C2.sense(0, 1, 0)
+    assert C2.sense(3, 3, 0)
 
-    assert not C3.sense(4, 1, 0)
-    assert not C3.sense(2, 0, 0)
-    assert not C3.sense(1.8, 6, 0)
+    assert C3.sense(4, 1, 0)
+    assert C3.sense(2, 0, 0)
+    assert C3.sense(1.8, 6, 0)
 
     # test sense for cases on the edge - dependent on motion
     # these test cases are either entering or exiting.
 
-    assert C1.sense(1, 0, 180)
-    assert C2.sense(1, 6, -90)
-    assert C3.sense(-4, 10, 0)
+    assert not C1.sense(1, 0, 180)
+    assert not C2.sense(1, 6, -90)
+    assert not C3.sense(-4, 10, 0)
 
 
-    assert not C1.sense(1, 0, 0)
-    assert not C2.sense(3, 4, 20)
-    assert not C3.sense(2, 10, 45)
+    assert C1.sense(1, 0, 0)
+    assert C2.sense(3, 4, 20)
+    assert C3.sense(2, 10, 45)
 
     # test sense for cases with tangent lines - should be
-    # considered to be TRUE
+    # considered to be FALSE
 
-    assert C1.sense(1, 0, 90)
-    assert C2.sense(-1, 4, 270)
-    assert C3.sense(-1, 13, 0)
+    assert not C1.sense(1, 0, 90)
+    assert not C2.sense(-1, 4, 270)
+    assert not C3.sense(-1, 13, 0)
         
 
     # test dist_to_boundary
@@ -225,20 +225,20 @@ def testCell():
     # create testable cells
 
     # Cell1: circle
-    Cell1 = Cell(Circle(0,0,1))
+    Cell1 = Cell(Circle(0,0,1), False)
 
     # Cell2: square
-    Cell2 = Cell(XPlane(-1))
-    Cell2.add_surface(YPlane(-1))
-    Cell2.add_surface(XPlane(1))
-    Cell2.add_surface(YPlane(1))
+    Cell2 = Cell(XPlane(-1), True)
+    Cell2.add_surface(YPlane(-1), True)
+    Cell2.add_surface(XPlane(1), False)
+    Cell2.add_surface(YPlane(1), False)
 
     # Cell3: circle in a square
-    Cell3 = Cell(Circle(1,1,2))
-    Cell3.add_surface(XPlane(-2))
-    Cell3.add_surface(XPlane(4))
-    Cell3.add_surface(YPlane(-2))
-    Cell3.add_surface(YPlane(4))
+    Cell3 = Cell(Circle(1,1,2), True)
+    Cell3.add_surface(XPlane(-2), True)
+    Cell3.add_surface(XPlane(4), False)
+    Cell3.add_surface(YPlane(-2), True)
+    Cell3.add_surface(YPlane(4), False)
 
     # test get_surfaces (worked as expected)
 ##    print Cell1.get_surfaces()

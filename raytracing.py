@@ -3,9 +3,6 @@ import math
 class Surface():
     # superclass containing different types of surface
     # i.e. planes, circles, squares, etc.
-
-    # ADD MORE INHERITANCE -- i.e. implement more generalized surface stuff
-    # see emailed attachment for more information
     
     # ideally, make it so a meaningful Surface object can be created
     # rather than only XPlane, YPlane, Circle objects
@@ -189,15 +186,15 @@ class Circle(Surface):
     def get_center(self):
         return self.center
     def sense(self, x_input, y_input, direction):
-        """Returns whether or not the point is inside the circle. If the point is on the boundary of the circle,
+        """Returns False for inside circle and True for outside. If the point is on the boundary of the circle,
             its sense depends on whether it's moving into or out of the circle. If the path is tangent to the circle,
-            it is considered within the circle and returns True."""
+            it is considered within the circle and returns False."""
         
         # first: determine the slope at the point, in case it's a boundary case.
         # doing this here so it doesn't confuse the if/elif/else block later.
 
-        if (self.get_rad()**2 - (x_input-self.getX())**2) < 0:
-            return False
+        if self.get_rad()**2 < (x_input-self.getX())**2 + (y_input-self.getY())**2:
+            return True
             # this means it is outside of the circle.
         elif (self.get_rad()**2 - (x_input-self.getX())**2) == 0:
             slope_at_point = None
@@ -207,18 +204,18 @@ class Circle(Surface):
 
         # first case: it is NOT along the edges
         if (x_input - self.getX())**2 + (y_input - self.getY())**2 != self.get_rad()**2:
-            return (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2
+            return not (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2
             # just return if it's within or outside the circle
 
         # next case: the circle has a vertical slope at (x,y), which matches the direction it is moving - special case of tangency.
         elif slope_at_point == None and math.radians(direction) == math.pi/2 or slope_at_point == None and math.radians(direction) == 3*math.pi/2:
             #it's tangent, with a vertical slope
-            return True
+            return False
 
         # need to check for tangency again here or else we get false negatives
         elif type(slope_at_point) == float and math.atan(slope_at_point) == math.radians(direction):
             # this means it is tangent to the circle
-            return True
+            return False
 
         # final case: the slope exists (is not infinite). check to see what happens if we move it over a little.
         else:
@@ -301,78 +298,83 @@ class Circle(Surface):
         # next: starting outside circle, missing it
             # this will probably be "else"
 
-class Cell(): # don't have it inherit
+class Cell():
     """Takes one surface as initial input, the rest have to be added.
 
         Currently assumes the shape is a circle or rectangle.
 
         Surfaces are stored in a list of self.surfaces."""
-    def __init__(self, surface):
-        self.surfaces = [surface]
+    def __init__(self, surface, sense):
+        self.surfaces = [(surface, sense)]
     def add_surface(self,new_surface, sense):
         """sense: -1 for left / inside, 1 for right / outside"""
-        self.surfaces.append(new_surface, sense)
-        
+        self.surfaces.append((new_surface, sense))
     def get_surfaces(self):
         return self.surfaces
     def am_i_in_cell(self, x, y, direction):
-
-        # circle cell:
-        if len(self.get_surfaces()) == 1:            
-            # if the cell only has one surface, just return
-            # whether or not its 'sense' of that is positive.
-            # this is really only meaningful for circles.
-            return self.get_surfaces()[0].sense(x, y, direction)
-        
-        else:
-            
-            # right now this only supports rectangles (2 XPlanes and 2 YPlanes) and circles
-            surface_dict = {'min_x':None, 'max_x':None, 'min_y':None, 'max_y':None, 'circle':None}
-            
-            for surface in self.get_surfaces():
-                if isinstance(surface, XPlane):
-                    if surface_dict.get('min_x') == None:
-                        surface_dict['min_x'] = surface
-                    elif surface < surface_dict.get('min_x'):
-                        surface_dict['max_x'] = surface_dict['min_x']
-                        surface_dict['min_x'] = surface
-                    else:
-                        surface_dict['max_x'] = surface
-                        
-                if isinstance(surface, YPlane):
-                    if surface_dict.get('min_y') == None:
-                        surface_dict['min_y'] = surface
-                    elif surface < surface_dict.get('min_y'):
-                        surface_dict['max_y'] = surface_dict['min_y']
-                        surface_dict['min_y'] = surface
-                    else:
-                        surface_dict['max_y'] = surface
-                if isinstance(surface, Circle):
-                    surface_dict['circle'] = surface
-
-            xmax = surface_dict['max_x']
-            xmin = surface_dict['min_x']
-            ymax = surface_dict['max_y']
-            ymin = surface_dict['min_y']
-            circle = surface_dict['circle']
-
-
-            # plain rectangle case
-            if circle == None:
-                # return true only if sense passes for the minimums AND fails for the maximums.
-                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction)
-                            
-
-            # rectangle outside a circle
-            else:
-
-                # this is for debugging
-##                print 'xmin:',xmin.getX(), '; xmin sense', xmin.sense(x, y, direction)
-##                print 'ymin:',ymin.getY(), '; ymin sense', ymin.sense(x, y, direction)
-##                print 'xmax:',xmax.getX(), '; xmax sense', xmax.sense(x, y, direction)
-##                print 'ymax:',ymax.getY(), '; ymax sense', ymax.sense(x, y, direction)
-##                print 'circle sense', circle.sense(x, y, direction)
-                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction) and not circle.sense(x, y, direction)
+        in_cell = True
+        surfaces = self.get_surfaces()
+        for surface in surfaces:
+            if surface[0].sense(x, y, direction) != surface[1]:
+                return False
+        return True
+##
+##        # circle cell:
+##        if len(self.get_surfaces()) == 1:            
+##            # if the cell only has one surface, just return
+##            # whether or not its 'sense' of that is positive.
+##            # this is really only meaningful for circles.
+##            return self.get_surfaces()[0].sense(x, y, direction)
+##        
+##        else:
+##            
+##            # right now this only supports rectangles (2 XPlanes and 2 YPlanes) and circles
+##            surface_dict = {'min_x':None, 'max_x':None, 'min_y':None, 'max_y':None, 'circle':None}
+##            
+##            for surface in self.get_surfaces():
+##                if isinstance(surface, XPlane):
+##                    if surface_dict.get('min_x') == None:
+##                        surface_dict['min_x'] = surface
+##                    elif surface < surface_dict.get('min_x'):
+##                        surface_dict['max_x'] = surface_dict['min_x']
+##                        surface_dict['min_x'] = surface
+##                    else:
+##                        surface_dict['max_x'] = surface
+##                        
+##                if isinstance(surface, YPlane):
+##                    if surface_dict.get('min_y') == None:
+##                        surface_dict['min_y'] = surface
+##                    elif surface < surface_dict.get('min_y'):
+##                        surface_dict['max_y'] = surface_dict['min_y']
+##                        surface_dict['min_y'] = surface
+##                    else:
+##                        surface_dict['max_y'] = surface
+##                if isinstance(surface, Circle):
+##                    surface_dict['circle'] = surface
+##
+##            xmax = surface_dict['max_x']
+##            xmin = surface_dict['min_x']
+##            ymax = surface_dict['max_y']
+##            ymin = surface_dict['min_y']
+##            circle = surface_dict['circle']
+##
+##
+##            # plain rectangle case
+##            if circle == None:
+##                # return true only if sense passes for the minimums AND fails for the maximums.
+##                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction)
+##                            
+##
+##            # rectangle outside a circle
+##            else:
+##
+##                # this is for debugging
+####                print 'xmin:',xmin.getX(), '; xmin sense', xmin.sense(x, y, direction)
+####                print 'ymin:',ymin.getY(), '; ymin sense', ymin.sense(x, y, direction)
+####                print 'xmax:',xmax.getX(), '; xmax sense', xmax.sense(x, y, direction)
+####                print 'ymax:',ymax.getY(), '; ymax sense', ymax.sense(x, y, direction)
+####                print 'circle sense', circle.sense(x, y, direction)
+##                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction) and not circle.sense(x, y, direction)
 
             # TO DO:
 
@@ -380,7 +382,7 @@ class Cell(): # don't have it inherit
             # generalize cells (squares in circles, curved sides? etc.)
             # basically just generalize and clean up
 
-            # also plotting. use matplotlib.
+            # also plotting. use matplotlib
 
             # also read up on unittest vs nose
 
@@ -389,6 +391,9 @@ class Cell(): # don't have it inherit
             # in_cell: check each surface (check all constraints)
             
             # ADD SURFACE SHOULD INCLUDE DESIRED SENSE (duh)
-            # distance to each surface - take min
+            # distance to each surface - take minimum of collision distances (check for all surfaces involved - some will be None)
 
-            # give it a series of surfaces, 
+            # rectangle as a compound surface (not subclass of cell)
+
+
+            # give it a series of surfaces
