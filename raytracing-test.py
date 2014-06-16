@@ -240,31 +240,47 @@ def testCell():
     Cell3.add_surface(YPlane(-2), True)
     Cell3.add_surface(YPlane(4), False)
 
+    # Cell4: 3 planes (X = -1, X = 1, Y = -1) and the curved edge of a circle with r = 1, center (0, 1)
+    Cell4 = Cell(XPlane(-1), True)
+    Cell4.add_surface(XPlane(1),False)
+    Cell4.add_surface(YPlane(-1),True)
+    Cell4.add_surface(Circle(0,1,1),False)
+
     # test get_surfaces (worked as expected)
 ##    print Cell1.get_surfaces()
 ##    print Cell2.get_surfaces()
 ##    print Cell3.get_surfaces()
 ##
-    # test am_i_in_cell
+    # test in_cell
 
     # Cell1: just a circle
-    assert Cell1.am_i_in_cell(0, 0, 0)
-    assert Cell1.am_i_in_cell(0, 0.5, 90)
-    assert Cell1.am_i_in_cell(1, 0, 180)
-    assert not Cell1.am_i_in_cell(1, 0, 0)
-    assert not Cell1.am_i_in_cell(2, 2, 90)
+    assert Cell1.in_cell(0, 0, 0)
+    assert Cell1.in_cell(0, 0.5, 90)
+    assert Cell1.in_cell(1, 0, 180)
+    assert not Cell1.in_cell(1, 0, 0)
+    assert not Cell1.in_cell(2, 2, 90)
 
     # Cell2: square, len 2, centered at (0,0)
-    assert Cell2.am_i_in_cell(0, 0, 180)
-    assert Cell2.am_i_in_cell(-1,-1,45)
-    assert not Cell2.am_i_in_cell(-2, -1, 0)
-    assert not Cell2.am_i_in_cell(-1,-1,-5)
+    assert Cell2.in_cell(0, 0, 180)
+    assert Cell2.in_cell(-1,-1,45)
+    assert not Cell2.in_cell(-2, -1, 0)
+    assert not Cell2.in_cell(-1,-1,-5)
 
     # Cell3: square of len 6 centered at (1,1) with a circle cutout (rad 2, center (1,1)).
-    assert not Cell3.am_i_in_cell(1,1,0)
-    assert not Cell3.am_i_in_cell(1,3,-90)
-    assert not Cell3.am_i_in_cell(1,3,0) # tangent to circle = circle sense True = am_i_in False
-    assert Cell3.am_i_in_cell(1,3.1,0)
+    assert not Cell3.in_cell(1,1,0)
+    assert not Cell3.in_cell(1,3,-90)
+    assert not Cell3.in_cell(1,3,0) # tangent to circle = circle sense True = am_i_in False
+    assert Cell3.in_cell(1,3.1,0)
+
+    # Cell4: 3 planes (X = -1, X = 1, Y = -1) and the curved edge of a circle with r = 1, center (0, 1)
+    assert Cell4.in_cell(0,0,0)
+    assert Cell4.in_cell(-1,1,0)
+    assert Cell4.in_cell(0,2,0)
+    assert not Cell4.in_cell(0,3,0)
+    assert not Cell4.in_cell(0,2,90)
+
+def testPlot():
+    
     
 
 testXPlane()

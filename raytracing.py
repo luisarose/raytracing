@@ -196,15 +196,17 @@ class Circle(Surface):
         if self.get_rad()**2 < (x_input-self.getX())**2 + (y_input-self.getY())**2:
             return True
             # this means it is outside of the circle.
-        elif (self.get_rad()**2 - (x_input-self.getX())**2) == 0:
+            
+        elif (self.get_rad()**2 == (x_input-self.getX())**2):
             slope_at_point = None
             # this means it has a vertical slope at the point (so one of the two sides)
+
         else:
             slope_at_point = (self.getX()-x_input)/(self.get_rad()**2 - (x_input-self.getX())**2)**0.5           
-
-        # first case: it is NOT along the edges
+            
+        # simple case: it is NOT along the edges
         if (x_input - self.getX())**2 + (y_input - self.getY())**2 != self.get_rad()**2:
-            return not (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2
+            return (x_input - self.getX())**2 + (y_input - self.getY())**2 > self.get_rad()**2
             # just return if it's within or outside the circle
 
         # next case: the circle has a vertical slope at (x,y), which matches the direction it is moving - special case of tangency.
@@ -266,7 +268,7 @@ class Circle(Surface):
             return None
 
 class Rectangle(Surface):
-    def __init__(self, x_0, y_0, x_len, y_len)
+    def __init__(self, x_0, y_0, x_len, y_len):
         self.center = (x_0, y_0)
         self.surfaces = [(XPlane(x_0 - x_len/2),True), (XPlane(x_0 + x_len/2),False), (YPlane(y_0 - y_len/2),True), (YPlane(y_0 + y_len/2),False)]
         self.x_len = x_len
@@ -306,7 +308,7 @@ class Cell():
         self.surfaces.append((new_surface, sense))
     def get_surfaces(self):
         return self.surfaces
-    def am_i_in_cell(self, x, y, direction):
+    def in_cell(self, x, y, direction):
         surfaces = self.get_surfaces()
         for surface in surfaces:
             if surface[0].sense(x, y, direction) != surface[1]:
