@@ -266,6 +266,7 @@ def testCell():
     assert not Cell3.am_i_in_cell(1,3,0) # tangent to circle = circle sense True = am_i_in False
     assert Cell3.am_i_in_cell(1,3.1,0)
     
+
 testXPlane()
 print "all x-plane tests passed"
 testYPlane()

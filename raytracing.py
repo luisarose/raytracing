@@ -255,6 +255,7 @@ class Circle(Surface):
         if d_minus > 0:
             return (x_input + d_minus*math.cos(dir_rad), y_input + d_minus*math.sin(dir_rad))
             # since that would be the first collision, shorter distance
+            # this would also work with a single intersection (tangent)
             
         elif d_plus > 0:
             return (x_input + d_plus*math.cos(dir_rad), y_input + d_plus*math.sin(dir_rad))
@@ -263,40 +264,34 @@ class Circle(Surface):
         else:
             #print 'all collisions were negative direction'
             return None
-                
-##    def dist_to_boundary(self, x_input, y_input, direction):
-##
-##        # on boundary: 0
-##        if (x_input - self.getX())**2 + (y_input - self.getY())**2 == self.get_rad()**2:
-##            return 0
-##
-##        # next case: starting within the circle
-##        elif (x_input - self.getX())**2 + (y_input - self.getY())**2 < self.get_rad()**2:
-##            slope = math.tan(math.radians(direction))
-##            b = y_input - slope*x_input
-##            # referring to y = mx + b
 
+class Rectangle(Surface):
+    def __init__(self, x_0, y_0, x_len, y_len)
+        self.center = (x_0, y_0)
+        self.surfaces = [(XPlane(x_0 - x_len/2),True), (XPlane(x_0 + x_len/2),False), (YPlane(y_0 - y_len/2),True), (YPlane(y_0 + y_len/2),False)]
+        self.x_len = x_len
+        self.y_len = y_len
+    def get_center(self):
+        return self.center
+    def get_surfaces(self):
+        return self.surfaces
+    def am_i_in_rect(self, x, y, direction):
+        surfaces = self.get_surfaces()
+        for surface in surfaces:
+            if surface[0].sense(x, y, direction) != surface[1]:
+                return False
+        return True
+    def dist_to_boundary(self, x, y, direction):
+        list_of_distances = []
+        surfaces = self.get_surfaces()
+        for surface in surfaces:
+            dist = surface[0].dist_to_boundary(x, y, direction)
+            if not dist == None:
+                list_of_distances.append(dist)
+        return min(list_of_distances)
+        
 
-        # steps to accomplish:
-        #   1. finding the x,y coords of the point on the circle's edge that is
-        #      along the trajectory of the ray
-        #           (this means: following direction, using y = mx + b, etc.
-        #           to find a point that fits the circle equation and the
-        #           linear equation (found using direction))
-        #   2. finding the distance between the given point and the target point
-
-
-        # add function : find collision point, then just find distance to that point (could be inherited)
-            
-            
-
-        # next case: starting outside the circle, but crossing it
-            # SOME CONDITION THAT TELLS IF IT CROSSES THE CIRCLE 
-
-        # next case: starting outside the circle, and tangential
-
-        # next: starting outside circle, missing it
-            # this will probably be "else"
+    
 
 class Cell():
     """Takes one surface as initial input, the rest have to be added.
@@ -312,69 +307,20 @@ class Cell():
     def get_surfaces(self):
         return self.surfaces
     def am_i_in_cell(self, x, y, direction):
-        in_cell = True
         surfaces = self.get_surfaces()
         for surface in surfaces:
             if surface[0].sense(x, y, direction) != surface[1]:
                 return False
         return True
-##
-##        # circle cell:
-##        if len(self.get_surfaces()) == 1:            
-##            # if the cell only has one surface, just return
-##            # whether or not its 'sense' of that is positive.
-##            # this is really only meaningful for circles.
-##            return self.get_surfaces()[0].sense(x, y, direction)
-##        
-##        else:
-##            
-##            # right now this only supports rectangles (2 XPlanes and 2 YPlanes) and circles
-##            surface_dict = {'min_x':None, 'max_x':None, 'min_y':None, 'max_y':None, 'circle':None}
-##            
-##            for surface in self.get_surfaces():
-##                if isinstance(surface, XPlane):
-##                    if surface_dict.get('min_x') == None:
-##                        surface_dict['min_x'] = surface
-##                    elif surface < surface_dict.get('min_x'):
-##                        surface_dict['max_x'] = surface_dict['min_x']
-##                        surface_dict['min_x'] = surface
-##                    else:
-##                        surface_dict['max_x'] = surface
-##                        
-##                if isinstance(surface, YPlane):
-##                    if surface_dict.get('min_y') == None:
-##                        surface_dict['min_y'] = surface
-##                    elif surface < surface_dict.get('min_y'):
-##                        surface_dict['max_y'] = surface_dict['min_y']
-##                        surface_dict['min_y'] = surface
-##                    else:
-##                        surface_dict['max_y'] = surface
-##                if isinstance(surface, Circle):
-##                    surface_dict['circle'] = surface
-##
-##            xmax = surface_dict['max_x']
-##            xmin = surface_dict['min_x']
-##            ymax = surface_dict['max_y']
-##            ymin = surface_dict['min_y']
-##            circle = surface_dict['circle']
-##
-##
-##            # plain rectangle case
-##            if circle == None:
-##                # return true only if sense passes for the minimums AND fails for the maximums.
-##                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction)
-##                            
-##
-##            # rectangle outside a circle
-##            else:
-##
-##                # this is for debugging
-####                print 'xmin:',xmin.getX(), '; xmin sense', xmin.sense(x, y, direction)
-####                print 'ymin:',ymin.getY(), '; ymin sense', ymin.sense(x, y, direction)
-####                print 'xmax:',xmax.getX(), '; xmax sense', xmax.sense(x, y, direction)
-####                print 'ymax:',ymax.getY(), '; ymax sense', ymax.sense(x, y, direction)
-####                print 'circle sense', circle.sense(x, y, direction)
-##                return xmin.sense(x, y, direction) and ymin.sense(x, y, direction) and not xmax.sense(x, y, direction) and not ymax.sense(x, y, direction) and not circle.sense(x, y, direction)
+
+    def dist_to_boundary(self, x, y, direction):
+        list_of_distances = []
+        surfaces = self.get_surfaces()
+        for surface in surfaces:
+            dist = surface[0].dist_to_boundary(x, y, direction)
+            if not dist == None:
+                list_of_distances.append(dist)
+        return min(list_of_distances)
 
             # TO DO:
 
@@ -385,14 +331,7 @@ class Cell():
             # also plotting. use matplotlib
 
             # also read up on unittest vs nose
-
-            # cells don't have to be closed (i.e. everything outside a circle, or everythign outside 3 planes
-            # adding surface splits things into half space
-            # in_cell: check each surface (check all constraints)
             
-            # ADD SURFACE SHOULD INCLUDE DESIRED SENSE (duh)
-            # distance to each surface - take minimum of collision distances (check for all surfaces involved - some will be None)
-
             # rectangle as a compound surface (not subclass of cell)
 
 
