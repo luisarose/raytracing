@@ -1,4 +1,6 @@
 from raytracing import *
+import numpy
+import matplotlib.pyplot as plt
 
 def testXPlane():
     # create 3 x-planes to test on
@@ -279,7 +281,50 @@ def testCell():
     assert not Cell4.in_cell(0,3,0)
     assert not Cell4.in_cell(0,2,90)
 
-def testPlot():
+def testPlot(direction):
+
+    # create cell: circle in square
+    test_cell = Cell(Circle(0,0,1), True)
+    test_cell.add_surface(Rectangle(0, 0, 4, 4), True)
+    print test_cell.get_surfaces()
+
+    to_plot_red = []
+    # this is for things that are not in the cell
+    
+    to_plot_blue = []
+    x_blue = [x for [x, y] in to_plot_blue]
+    y_blue = [y for [x, y] in to_plot_blue]
+    # this is for things that ARE in the cell
+
+    # create test points
+    x = []
+    x_current = -3
+    while x_current < 3:
+        x.append(x_current)
+        x_current += .1
+    x_1 = x[:]
+
+    y = x[:]
+
+    for x_val in x:
+        for y_val in y:
+            point = (x_val, y_val)
+            sense = test_cell.in_cell(x_val, y_val, direction)
+            if sense:
+                to_plot_blue.append([x_val, y_val])
+            else:
+                to_plot_red.append([x_val, y_val])
+
+    x_red = [x for [x, y] in to_plot_red]
+    y_red = [y for [x, y] in to_plot_red]
+
+    x_blue = [x for [x, y] in to_plot_blue]
+    y_blue = [y for [x, y] in to_plot_blue]
+
+    plt.plot(x_red, y_red, marker='.', color='r', linestyle='None')
+    plt.plot(x_blue, y_blue, marker='.',color='b', linestyle='None')
+    plt.show()
+    
     
     
 
@@ -291,3 +336,5 @@ testCircle()
 print "all circle tests passed"
 testCell()
 print "all cell tests passed"
+
+testPlot(0)

@@ -7,7 +7,47 @@ class Surface():
     # ideally, make it so a meaningful Surface object can be created
     # rather than only XPlane, YPlane, Circle objects
 
-    
+    def __init__(self, a, b, f, p,q, d):
+        self.a = a
+        self.b = b
+        self.f = f
+        self.p = p
+        self.q = q
+        self.d = d
+        
+    def get_a(self):
+        return self.a
+    def get_b(self):
+        return self.b
+    def get_f(self):
+        return self.f
+    def get_p(self):
+        return self.p
+    def get_q(self):
+        return self.q
+    def get_d(self):
+        return self.d
+    def sense(self, x, y, direction):
+        a = self.get_a()
+        b = self.get_b()
+        d = self.get_d()
+        f = self.get_f()
+        p = self.get_p()
+        q = self.get_q()
+        d = self.get_d()
+
+        value = a*x**2 + b*y**2 + f*x*y + p*x + q*y + d
+
+        if value != 0:
+            return value > 0
+        else:
+            rad_dir = math.radians(direction)
+            new_x = x + math.cos(rad_dir)*0.0001
+            new_y = x + math.cos(rad_dir)*0.0001
+            return sense(self, new_x, new_y, direction)
+            # this DOES NOT work for cases where the
+            # path is directly along a plane (infinite loop)
+            
     def dist_to_collision(self, x_input, y_input, x_col, y_col):
         return ((x_input - x_col)**2 + (y_input - y_col)**2)**0.5
     
@@ -270,14 +310,14 @@ class Circle(Surface):
 class Rectangle(Surface):
     def __init__(self, x_0, y_0, x_len, y_len):
         self.center = (x_0, y_0)
-        self.surfaces = [(XPlane(x_0 - x_len/2),True), (XPlane(x_0 + x_len/2),False), (YPlane(y_0 - y_len/2),True), (YPlane(y_0 + y_len/2),False)]
+        self.surfaces = [(XPlane(x_0 - (x_len/2)),True), (XPlane(x_0 + (x_len/2)),False), (YPlane(y_0 - (y_len/2)),True), (YPlane(y_0 + (y_len/2)),False)]
         self.x_len = x_len
         self.y_len = y_len
     def get_center(self):
         return self.center
     def get_surfaces(self):
         return self.surfaces
-    def am_i_in_rect(self, x, y, direction):
+    def sense(self, x, y, direction):
         surfaces = self.get_surfaces()
         for surface in surfaces:
             if surface[0].sense(x, y, direction) != surface[1]:
