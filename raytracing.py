@@ -259,6 +259,7 @@ class Circle(Surface):
             return None
 
 class Rectangle(Surface):
+    # rectangles are a mess
     def __init__(self, x_0, y_0, x_len, y_len):
         self.center = (x_0, y_0)
         self.surfaces = [(XPlane(x_0 - (x_len/2)),True), (XPlane(x_0 + (x_len/2)),False), (YPlane(y_0 - (y_len/2)),True), (YPlane(y_0 + (y_len/2)),False)]
@@ -272,8 +273,11 @@ class Rectangle(Surface):
         surfaces = self.get_surfaces()
         for surface in surfaces:
             if surface[0].sense(x, y, direction) != surface[1]:
-                return False
-        return True
+                return True
+                # true means OUTSIDE the rectangle
+        return False
+        # False means INSIDE the rectangle
+        
     def dist_to_boundary(self, x, y, direction):
         list_of_distances = []
         surfaces = self.get_surfaces()
@@ -293,16 +297,32 @@ class Cell():
 
         Surfaces are stored in a list of self.surfaces."""
     def __init__(self, surface, sense):
-        self.surfaces = [(surface, sense)]
-    def add_surface(self,new_surface, sense):
-        """sense: False for left / inside, True for right / outside"""
-        self.surfaces.append((new_surface, sense))
+        if isinstance(surface, Rectangle) and not sense:
+            for surface in new_surface.get_surfaces():
+                self.surfaces.append((surface[0], surface[1]))
+        else:
+            self.surfaces = [(surface, sense)]
+    def add_surface(self, new_surface, sense):
+        """sense: False for left / inside Circle, True for right / outside
+            annoying for rectangles"""
+        print new_surface, isinstance(new_surface, Rectangle)
+        if isinstance(new_surface, Rectangle) and not sense:
+            for surface in new_surface.get_surfaces():
+                self.surfaces.append((surface[0], surface[1]))
+                # adding all surfaces to cell b/c all conditions
+                # must be met in this case
+        else:
+            self.surfaces.append((new_surface, sense))
     def get_surfaces(self):
         return self.surfaces
     def in_cell(self, x, y, direction):
         surfaces = self.get_surfaces()
         for surface in surfaces:
-            if surface[0].sense(x, y, direction) != surface[1]:
+            if isinstance(surface, Rectangle) and surface[1]:
+                # THIS IS THE CASE WHERE WE WANT WHAT IS OUTSIDE OF A RECT
+                # THIS NEEDS TO BE WRITTEN BETTER
+                
+            elif surface[0].sense(x, y, direction) != surface[1]:
                 return False
         return True
 

@@ -367,23 +367,22 @@ def plot(cell, direction, xmin, xmax, ymin, ymax, step):
     plt.plot(x_blue, y_blue, marker='.',color='b', linestyle='None')
     plt.show()
 
-test_cell1 = Cell(Circle(0,0,1), True)
-test_cell1.add_surface(Rectangle(0, 0, 4, 4), True)
+test_cell1 = Cell(Circle(0,0,2), False) # inside a circle (r = 2)
+testPlot(test_cell1, 0)
+test_cell1.add_surface(Rectangle(0, 0, 0.5, 0.5), True) # outside a square (l = 1)
+testPlot(test_cell1, 0)
 
-# adding rectangles doesn't really work
+#test_cell2 = Cell(Circle(1,1,2), True)
+#test_cell2.add_surface(Circle(0,0,4), False)
 
-test_cell2 = Cell(Circle(1,1,2), True)
-test_cell2.add_surface(Circle(0,0,4), False)
+##testXPlane()
+##print "all x-plane tests passed"
+##testYPlane()
+##print "all y-plane tests passed"
+##testCircle()
+##print "all circle tests passed"
+##testCell()
+##print "all cell tests passed"
 
-testXPlane()
-print "all x-plane tests passed"
-testYPlane()
-print "all y-plane tests passed"
-testCircle()
-print "all circle tests passed"
-testCell()
-print "all cell tests passed"
-
-#testPlot(test_cell1, 0)
 #testPlot(test_cell2, 0)
 #plot(test_cell2, 0, -5, 10, -5, 5, 0.1)
