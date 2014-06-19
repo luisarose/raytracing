@@ -110,34 +110,6 @@ class XPlane(Surface):
             y_col = y_input + (self.getX() - x_input)*math.tan(math.radians(direction))
             return (x_col, y_col)
 
-# this block is now unnecessary
-        
-##    def dist_to_boundary(self, x_input, y_input, direction):
-##        if self.getX() == x_input:
-##            return 0
-##        elif self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) > 0:
-##            # this means it will never cross the boundary
-##            # so it returns None, meaning infinity
-##            return None
-##        elif not self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) < 0:
-##            # this means it will never cross the boundary
-##            # so it returns None, meaning infinity
-##            return None
-##        elif math.cos(math.radians(direction)) == 0:
-##            # this means it is moving parallel to the plane and will never reach it
-##            return None
-##        else:
-##            # hypotenuse = adj/cos
-##            # absolute value for distance
-##            return abs((x_input - self.getX())/math.cos(math.radians(direction)))
-
-##    def dist_to_boundary(self, x_input, y_input, direction):
-##        if self.find_collision_point(x_input, y_input, direction) == None:
-##            return None
-##        x_col, y_col = self.find_collision_point(x_input, y_input, direction)
-##        return self.dist_to_collision(x_input, y_input, x_col, y_col)
-
-
 class YPlane(Surface):
     def __init__(self, y_val):
         self.y_val = y_val
@@ -189,27 +161,6 @@ class YPlane(Surface):
             x_col = x_input + (self.getY() - y_input)/math.tan(math.radians(direction))
             y_col = self.getY()
             return (x_col, y_col)
-
-    
-##    def dist_to_boundary(self, x_input, y_input, direction):
-##        if self.getY() == y_input:
-##            return 0
-##        if self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) > 0:
-##            # this means it will never cross the boundary
-##            # so it returns None, meaning infinity
-##            return None
-##        elif not self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) < 0:
-##            # this means it will never cross the boundary
-##            # so it returns None, meaning infinity
-##            return None
-##        elif math.sin(math.radians(direction)) == 0:
-##            # this means it is moving parallel to the plane and will never reach it
-##            return None
-##        else:
-##            # hypotenuse = opp/sin
-##            # absolute value for distance
-##            return abs((y_input - self.getY())/math.sin(math.radians(direction)))
-##
 
 class Circle(Surface):
     def __init__(self, x_0, y_0, r):
@@ -332,7 +283,7 @@ class Rectangle(Surface):
                 list_of_distances.append(dist)
         return min(list_of_distances)
         
-
+    # ADD TEST CASES FOR RECTANGLE
     
 
 class Cell():
@@ -344,7 +295,7 @@ class Cell():
     def __init__(self, surface, sense):
         self.surfaces = [(surface, sense)]
     def add_surface(self,new_surface, sense):
-        """sense: -1 for left / inside, 1 for right / outside"""
+        """sense: False for left / inside, True for right / outside"""
         self.surfaces.append((new_surface, sense))
     def get_surfaces(self):
         return self.surfaces
@@ -366,15 +317,7 @@ class Cell():
 
             # TO DO:
 
-            # generalize Surface so it could actually be used
-            # generalize cells (squares in circles, curved sides? etc.)
-            # basically just generalize and clean up
-
-            # also plotting. use matplotlib
-
+            # test cases for Rectangle
+            # test cases for Surface (generalized)
+            # more testing with plotting
             # also read up on unittest vs nose
-            
-            # rectangle as a compound surface (not subclass of cell)
-
-
-            # give it a series of surfaces
