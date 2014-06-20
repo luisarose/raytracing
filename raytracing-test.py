@@ -1,6 +1,23 @@
 from raytracing import *
+from surfaces import *
+from cells import *
+from plot import *
+
 import numpy
 import matplotlib.pyplot as plt
+
+def testSurface():
+    S1 = Surface(0, 0, 0, 3, 0, -3) # XPlane(1)
+    S2 = Surface(0, 0, 0, 0, 2, 1)  # YPlane(-0.5)
+    S3 = Surface(0, 0, 0, 1, 1, 0)  # angled plane
+    S4 = Surface(1, 2, 0, 0, 0, -3)  # ellipse!!
+
+    cell = Cell()
+    cell.add_surface(S4, True)
+    simple_plot(cell, 0)
+    plot(cell, 0, -2, 2, -2, 2, 0.1)
+
+    # this is good enough for me
 
 def testXPlane():
     # create 3 x-planes to test on
@@ -137,6 +154,22 @@ def testYPlane():
     assert YP3.dist_to_boundary(0, 1, -30) > 3
     assert YP3.dist_to_boundary(0, -2, 90) == 0
 
+def testRectangle():
+    
+    R1 = Rectangle(0,0,1,1)
+    R2 = Rectangle(-1,2,3,4)
+    R3 = Rectangle(0,0,4,6)
+
+    #assert R1.sense(2, 2, 0)
+    #assert R2.sense(-3, 0, 0)
+    #assert R3.sense(-2, -5, 0)
+
+    assert not R1.sense(0,0,0)
+    assert not R1.sense(0,0.5,-90)
+    assert not R2.sense(-1,2,3)
+    assert not R2.sense(-2.5,2,0)
+    assert not R3.sense(0,0,0)
+    assert not R3.sense(0,-3,90)
 
 def testCircle():
 
@@ -227,23 +260,27 @@ def testCell():
     # create testable cells
 
     # Cell1: circle
-    Cell1 = Cell(Circle(0,0,1), False)
+    Cell1 = Cell()
+    Cell1.add_surface(Circle(0,0,1), False)
 
     # Cell2: square
-    Cell2 = Cell(XPlane(-1), True)
+    Cell2 = Cell()
+    Cell2.add_surface(XPlane(-1), True)
     Cell2.add_surface(YPlane(-1), True)
     Cell2.add_surface(XPlane(1), False)
     Cell2.add_surface(YPlane(1), False)
 
     # Cell3: circle in a square
-    Cell3 = Cell(Circle(1,1,2), True)
+    Cell3 = Cell()
+    Cell3.add_surface(Circle(1,1,2), True)
     Cell3.add_surface(XPlane(-2), True)
     Cell3.add_surface(XPlane(4), False)
     Cell3.add_surface(YPlane(-2), True)
     Cell3.add_surface(YPlane(4), False)
 
     # Cell4: 3 planes (X = -1, X = 1, Y = -1) and the curved edge of a circle with r = 1, center (0, 1)
-    Cell4 = Cell(XPlane(-1), True)
+    Cell4 = Cell()
+    Cell4.add_surface(XPlane(-1), True)
     Cell4.add_surface(XPlane(1),False)
     Cell4.add_surface(YPlane(-1),True)
     Cell4.add_surface(Circle(0,1,1),False)
@@ -281,108 +318,43 @@ def testCell():
     assert not Cell4.in_cell(0,3,0)
     assert not Cell4.in_cell(0,2,90)
 
-def testPlot(cell, direction):
-    """Takes in the cell and direction. Plots on -3 < x < 3, -3 < y < 3
-        with a step size of 0.1."""
+def test_plot():
 
-    to_plot_red = []
-    # this is for things that are not in the cell
-    
-    to_plot_blue = []
-    x_blue = [x for [x, y] in to_plot_blue]
-    y_blue = [y for [x, y] in to_plot_blue]
-    # this is for things that ARE in the cell
+    # create test cells
+    test_cell1 = Cell()
+    test_cell1.add_surface(Circle(0,0,2), False) # inside a circle (r = 2)
+    test_cell1.add_surface(Rectangle(0, 0, 0.5, 0.5), True) # outside a square (l = 1)
 
-    # create test points
-    x = []
-    x_current = -3
-    while x_current < 3:
-        x.append(x_current)
-        x_current += .1
-    x_1 = x[:]
+    test_cell2 = Cell()
+    test_cell2.add_surface(Circle(1,1,2), True) # outside a circle
+    test_cell2.add_surface(Circle(0,0,4), False) # inside a larger circle
 
-    y = x[:]
+    test_cell3 = Cell()
+    test_cell3.add_surface(Rectangle(0,0,2,2), False) # inside a rectangle
+    test_cell3.add_surface(Circle(0,0,1), True) # outside a circle
 
-    for x_val in x:
-        for y_val in y:
-            point = (x_val, y_val)
-            sense = cell.in_cell(x_val, y_val, direction)
-            if sense:
-                to_plot_blue.append([x_val, y_val])
-            else:
-                to_plot_red.append([x_val, y_val])
+    test_cell4 = Cell()
+    test_cell4.add_surface(Rectangle(0,0,5,5),False)
+    test_cell4.add_surface(Rectangle(0,0,3,3), True)
 
-    x_red = [x for [x, y] in to_plot_red]
-    y_red = [y for [x, y] in to_plot_red]
+    # call simple_plot or plot
+    ##simple_plot(test_cell1, 0)
+    ##simple_plot(test_cell2, 0)
+    ##simple_plot(test_cell3, 0)
+    simple_plot(test_cell4, 0)
 
-    x_blue = [x for [x, y] in to_plot_blue]
-    y_blue = [y for [x, y] in to_plot_blue]
+    ##plot(test_cell, 0, -5, 10, -5, 5, 0.1)
 
-    plt.plot(x_red, y_red, marker='.', color='r', linestyle='None')
-    plt.plot(x_blue, y_blue, marker='.',color='b', linestyle='None')
-    plt.show()
-
-# more flexible plotting function
-def plot(cell, direction, xmin, xmax, ymin, ymax, step):
-    """Takes in the cell, the direction of the particles (uniform here), the limits of the plot,
-        and the step size between points (same for x and y)."""
-
-    to_plot_red = []
-    # this is for things that are not in the cell
-    
-    to_plot_blue = []
-    # this is for things that ARE in the cell
-
-    # create test points
-    x = []
-    x_current = xmin
-    while x_current < xmax:
-        x.append(x_current)
-        x_current += step
-    x_1 = x[:]
-
-    y = []
-    y_current = ymin
-    while y_current < ymax:
-        y.append(y_current)
-        y_current += step
-
-    for x_val in x:
-        for y_val in y:
-            point = (x_val, y_val)
-            sense = cell.in_cell(x_val, y_val, direction)
-            if sense:
-                to_plot_blue.append([x_val, y_val])
-            else:
-                to_plot_red.append([x_val, y_val])
-
-    x_red = [x for [x, y] in to_plot_red]
-    y_red = [y for [x, y] in to_plot_red]
-    # splits the list of points into x and y lists for plt
-
-    x_blue = [x for [x, y] in to_plot_blue]
-    y_blue = [y for [x, y] in to_plot_blue]
-
-    plt.plot(x_red, y_red, marker='.', color='r', linestyle='None')
-    plt.plot(x_blue, y_blue, marker='.',color='b', linestyle='None')
-    plt.show()
-
-test_cell1 = Cell(Circle(0,0,2), False) # inside a circle (r = 2)
-testPlot(test_cell1, 0)
-test_cell1.add_surface(Rectangle(0, 0, 0.5, 0.5), True) # outside a square (l = 1)
-testPlot(test_cell1, 0)
-
-#test_cell2 = Cell(Circle(1,1,2), True)
-#test_cell2.add_surface(Circle(0,0,4), False)
-
+##testSurface()
 ##testXPlane()
 ##print "all x-plane tests passed"
 ##testYPlane()
 ##print "all y-plane tests passed"
+##testRectangle()
+##print "all rectangle tests passed"
 ##testCircle()
 ##print "all circle tests passed"
 ##testCell()
 ##print "all cell tests passed"
-
-#testPlot(test_cell2, 0)
-#plot(test_cell2, 0, -5, 10, -5, 5, 0.1)
+##test_plot()
+##print "done plotting"
