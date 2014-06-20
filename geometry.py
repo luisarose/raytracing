@@ -16,13 +16,6 @@ class Geometry():
         self.x_max = self.edges[1][0].getX()
         self.y_min = self.edges[2][0].getY()
         self.y_max = self.edges[3][0].getY()
-    def __str__(self):
-        # just something I can print easily
-        x_min = self.get_edges()[0][0].getX()
-        x_max = self.get_edges()[1][0].getX()
-        y_min = self.get_edges()[2][0].getY()
-        y_max = self.get_edges()[3][0].getY()
-        return "Geometry bounded with xmin "+str(x_min)+", xmax "+str(x_max)+", ymin "+str(y_min)+", and ymax "+str(y_max)+". Total cells: "+str(len(self.get_cells()))
     def get_edges(self):
         return self.edges
     def get_xmax(self):
@@ -75,13 +68,82 @@ class Geometry():
         dist_to_edge = min(dist_to_edges)
         return min(dist_to_edge, current_cell.dist_to_boundary(x, y, direction))    
     def make_tracks(self, direction, track_spacing):
-        pass
+        """Asserts that direction is between 0 and 360 degrees.
+        Track spacing is measured across parallel."""
+        assert direction >= 0
+        assert direction <= 360
+        rad_dir = math.radians(direction)
+
+
+        # directions treated as "positive angles"
+        if rad_dir >= 0 and rad_dir <= math.pi*0.5:
+            # moving up + right
+            x_init = 0
+            pos_ang = True
+        elif rad_dir >= 1.5*math.pi and rad_dir <= 2*math.pi:
+            # moving down + left: flip direction
+            direction = direction - 180
+            rad_dir = math.radians(direction)
+            x_init = 0
+            pos_ang = True
+
+        # directions treated as "negative angles"
+        elif rad_dir > 1.5*math.pi and rad_dir < 2*math.pi:
+            # moving down + right: flip direction
+            direction = direction - 180
+            rad_dir = math.radians(direction)
+            x_init = self.get_xmax()
+            pos_ang = False
+            
+        elif rad_dir > math.pi*0.5 and rad_dir < math.pi:
+            # moving left + up
+            x_init = self.get_xmax()
+            pos_ang = False
     
-        # TO BE ADDED
-        
+        # set spacing along sides and bottom
+        y_spacing = float(track_spacing)/math.cos(rad_dir)
+        x_spacing = float(track_spacing)/math.sin(rad_dir)
+
+        # begin laying down tracks along one side, starting from top
+        # (but first moving down one full trackspacing - no point in having
+        # a track move upwards from the top)
+        yval = self.get_ymax() - y_spacing
+
+        # if positive angle, start at left; negative, start at right
+        while yval >=0: 
+            make_single_track(x_init, yval, direction)
+            yval -= y_spacing
+            # yval should now be below the edge of the bounding box
+
+        # YPlane representing minimum y value (bounding box)
+        min_y_plane = self.get_edges()[2][0]
+
+        # if pos: move left to right across bottom
+        if pos_ang:
+
+            # find collision point along the ray from yval (the ray that would start below the bounding box)
+            x_start = min_y_plane.find_collision_point(0, yval, direction)
+            xval = x_start[0]
+            while xval < self.get_xmax():
+                make_single_track(xval, 0, direction)
+                xval += x_spacing
+
+        # if neg: move right to left across bottom
+        if not pos_ang:
+
+            # find collision point along the ray from yval (the ray that would start below the bounding box)
+            x_start = min_y_plane.find_collision_point(0, yval, direction)
+            xval = x_start[0]
+            # this can be OUTSIDE the bounding box because we're going to move in
+
+            xval -= x_spacing
+            # now we're at the actual starting point
+            while xval > 0:
+                make_single_track(xval, 0, direction)
+                xval -= x_spacing
+                
     def make_single_track(self, x_0, y_0, direction):
         """Takes in direction (angle in degrees) and start point (x,y)."""
-
         # first must find the endpoint of the track (on the far edge of bounding box)
         endpts = {}
         for edge in self.get_edges():
@@ -105,41 +167,27 @@ class Geometry():
         # still need to determine segments!!
         self.generate_segments(new_track, x_0, y_0, direction)
 
-    def generate_segments(self, new_track, x_0, y_0, direction):
+    def generate_segments(self, track, x_0, y_0, direction):
         """Determines segments, creates Segment instances, and
         adds them to the Track instance"""
-        segments = []
-        num_segments = 0
-
-        # determine how many segments there are: count collisisions
-        temp_x = x_0
-        temp_y = y_0
-        current_cell = self.which_cell(x_0, y_0, direction)[1]
-        while temp_x <= self.get_xmax() and temp_y <= self.get_ymax() and temp_x >= self.get_xmin() and temp_y >= self.get_ymin():
-            temp_x += 0.0001*math.cos(math.radians(direction))
-            temp_y += 0.0001*math.sin(math.radians(direction))
-            if not current_cell.in_cell(temp_x, temp_y, direction):
-                num_segments += 1
-                current_cell = self.which_cell(temp_x, temp_y, direction)
-                if current_cell == None and not self.in_geometry(temp_x, temp_y, direction):
-                    break
-                else:
-                    current_cell = current_cell[1]
-
-        # now we know how many segments there are - must find exact points
-
-        # setting starting point for the first segment
-        x_i, y_i = x_0+0.0001*math.cos(math.radians(direction)), y_0+0.0001*math.sin(math.radians(direction))
-
-        # generate Segments and add them to the Track
-        for num in xrange(num_segments):
-            current_cell = self.which_cell(x_i, y_i, direction)[1]
+        tiny_x_step = 0.0001*math.cos(math.radians(direction))
+        tiny_y_step = 0.0001*math.sin(math.radians(direction))
+        temp_x, temp_y = x_0+tiny_x_step, y_0+tiny_y_step
+        # just so it doesn't return the boundary it starts on
+        num_segs = 0
+        collision_point = 'start'
+        while True:
+            if not self.in_geometry(temp_x, temp_y, direction):
+                break
+            current_cell = self.which_cell(temp_x, temp_y, direction)[1]
+            num_segs += 1
+            collision_point = current_cell.find_collision_point(temp_x, temp_y, direction)
+            x_col, y_col = collision_point
             ID = self.generate_ID('next_segment_ID')
-            x_f, y_f = current_cell.find_collision_point(x_i, y_i, direction)
-            segment = Segment(x_i, y_i, x_f, y_f, ID)
-            new_track.add_segment(ID, segment)
-            x_i, y_i = x_f+0.0001*math.cos(math.radians(direction)), y_f+0.0001*math.cos(math.radians(direction))
-        
+            segment = Segment(temp_x - tiny_x_step, temp_y - tiny_y_step, x_col, y_col, ID)
+            temp_x, temp_y = x_col+tiny_x_step, y_col+tiny_y_step
+            track.add_segment(ID, segment)
+    
     def get_tracks(self):
         return self.tracks
 

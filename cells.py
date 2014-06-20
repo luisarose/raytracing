@@ -40,11 +40,12 @@ class Cell():
             dist = surface[0].dist_to_boundary(x, y, direction)
             if dist != None:
                 dict_of_distances[dist] = surface[0].find_collision_point(x, y, direction)
-        if dict_of_distances == {}:
-            print "STOP AND READ THIS"
-            print "******************"
-            print x, y
-            print "why would that have no distances?"
-            print self.in_cell(x,y,direction)
-            print self.dist_to_boundary(x, y, direction)
+#        if dict_of_distances == {}:
+            # debugging
+##            print "STOP AND READ THIS"
+##            print "******************"
+##            print x, y
+##            print "why would that have no distances?"
+##            print self.in_cell(x,y,direction)
+##            print self.dist_to_boundary(x, y, direction)
         return dict_of_distances[min(dict_of_distances)]

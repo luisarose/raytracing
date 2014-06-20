@@ -354,9 +354,9 @@ def testGeometry():
     G = Geometry(box)
     print 'made geometry'
     cell1 = Cell()
-    cell1.add_surface(Circle(0,0,5),False)
+    cell1.add_surface(Circle(0,0,4),False)
     cell2 = Cell()
-    cell2.add_surface(Circle(0,0,5),True)
+    cell2.add_surface(Circle(0,0,4),True)
     cell2.add_surface(box,False)
 
     cell1_id = G.generate_ID('next_cell_ID')
@@ -364,19 +364,28 @@ def testGeometry():
     G.add_cell(cell1, cell1_id)
     G.add_cell(cell2, cell2_id)
 
+    G.make_single_track(-5, 0, 0)
     G.make_single_track(-5, -5, 45)
     tracks = G.get_tracks()
-    # dictionary with one key: 1
-    segments = tracks[1].get_segments()
+    # dictionary with two keys: 1, 2
+    segments1 = tracks[1].get_segments()
     # dictionary with keys 1-3
-    print segments
-    print 'starting pt', segments[1].get_start()
-    print 'endpt', segments[1].get_endpt()
-    print 'starting pt', segments[2].get_start()
-    print 'endpt', segments[2].get_endpt()
-    print 'starting pt', segments[3].get_start()
-    print 'endpt', segments[3].get_endpt()
-    # omg
+    print segments1
+    print 'starting pt', segments1[1].get_start()
+    print 'endpt', segments1[1].get_endpt()
+    print 'starting pt', segments1[2].get_start()
+    print 'endpt', segments1[2].get_endpt()
+    print 'starting pt', segments1[3].get_start()
+    print 'endpt', segments1[3].get_endpt()
+    segments2 = tracks[2].get_segments()
+    print segments2
+    # dictionary with keys 4-6
+    print 'starting pt', segments2[4].get_start()
+    print 'endpt', segments2[4].get_endpt()
+    print 'starting pt', segments2[5].get_start()
+    print 'endpt', segments2[5].get_endpt()
+    print 'starting pt', segments2[6].get_start()
+    print 'endpt', segments2[6].get_endpt()
     
 
     

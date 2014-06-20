@@ -264,7 +264,6 @@ class Circle(Surface):
 
     def find_collision_point(self, x_input, y_input, direction):
 
-
         # on boundary: return point
         if abs((x_input - self.getX())**2 + (y_input - self.getY())**2 - self.get_rad()**2) < 0.0001:
             return (x_input, y_input)
@@ -300,5 +299,4 @@ class Circle(Surface):
             # check to make sure it's a positive distance
             
         else:
-            print 'no circle collisions found'
             return None
