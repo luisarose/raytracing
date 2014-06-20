@@ -13,7 +13,6 @@ class Cell():
         if isinstance(new_surface, Rectangle) and not sense:
             for surface in new_surface.get_surfaces():
                 self.surfaces.append((surface[0], surface[1]))
-
         else:
             self.surfaces.append((new_surface, sense))
     def get_surfaces(self):
@@ -26,7 +25,6 @@ class Cell():
             if surface[0].sense(x, y, direction) != surface[1]:
                 return False
         return True
-
     def dist_to_boundary(self, x, y, direction):
         list_of_distances = []
         surfaces = self.get_surfaces()
@@ -35,3 +33,11 @@ class Cell():
             if not dist == None:
                 list_of_distances.append(dist)
         return min(list_of_distances)
+    def find_collision_point(self, x, y, direction):
+        dict_of_distances = {}
+        surfaces = self.get_surfaces()
+        for surface in surfaces:
+            dist = surface[0].dist_to_boundary(x, y, direction)
+            if not dist == None:
+                dict_of_distances[dist] = surface[0].find_collision_point(x, y, direction)
+        return min(dict_of_distances)[1]

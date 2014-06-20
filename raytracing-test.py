@@ -2,6 +2,7 @@ from raytracing import *
 from surfaces import *
 from cells import *
 from plot import *
+from geometry import *
 
 import numpy
 import matplotlib.pyplot as plt
@@ -341,9 +342,27 @@ def test_plot():
     ##simple_plot(test_cell1, 0)
     ##simple_plot(test_cell2, 0)
     ##simple_plot(test_cell3, 0)
-    simple_plot(test_cell4, 0)
+    ##simple_plot(test_cell4, 0)
 
     ##plot(test_cell, 0, -5, 10, -5, 5, 0.1)
+
+def testGeometry():
+
+    # generate geometry: circle cell inside a square cell (w/ circle cutout)
+    box = Rectangle(0,0,10,10)
+    G = Geometry(box)
+    cell1 = Cell()
+    cell1.add_surface(Circle(0,0,5),False)
+    cell2 = Cell()
+    cell2.add_surface(Circle(0,0,5),True)
+    cell2.add_surface(box,False)
+
+    cell1_id = G.generate_ID('next_cell_ID')
+    cell2_id = G.generate_ID('next_cell_ID')
+    G.add_cell(cell1, cell1_id)
+    G.add_cell(cell2, cell2_id)
+    print str(G)
+    
 
 ##testSurface()
 ##testXPlane()
@@ -358,3 +377,4 @@ def test_plot():
 ##print "all cell tests passed"
 ##test_plot()
 ##print "done plotting"
+testGeometry()

@@ -1,6 +1,7 @@
     # TO DO:
 
     # test cases for Surface (generalized)
+        # could add more (just tested plotting)
     # more testing with plotting
     
     # also read up on unittest vs nose ********
