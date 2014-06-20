@@ -2,7 +2,6 @@ from surfaces import *
 
 import math    
 
-
 class Cell():
     """Takes one surface as initial input, the rest have to be added.
         Surfaces are stored in a list of self.surfaces."""
@@ -30,7 +29,8 @@ class Cell():
         surfaces = self.get_surfaces()
         for surface in surfaces:
             dist = surface[0].dist_to_boundary(x, y, direction)
-            if not dist == None:
+            print dist
+            if dist != None:
                 list_of_distances.append(dist)
         return min(list_of_distances)
     def find_collision_point(self, x, y, direction):
@@ -38,6 +38,13 @@ class Cell():
         surfaces = self.get_surfaces()
         for surface in surfaces:
             dist = surface[0].dist_to_boundary(x, y, direction)
-            if not dist == None:
+            if dist != None:
                 dict_of_distances[dist] = surface[0].find_collision_point(x, y, direction)
-        return min(dict_of_distances)[1]
+        if dict_of_distances == {}:
+            print "STOP AND READ THIS"
+            print "******************"
+            print x, y
+            print "why would that have no distances?"
+            print self.in_cell(x,y,direction)
+            print self.dist_to_boundary(x, y, direction)
+        return dict_of_distances[min(dict_of_distances)]

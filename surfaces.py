@@ -185,14 +185,25 @@ class Rectangle(Surface):
                 
         return False
         # False means INSIDE the rectangle
-        
+    def find_collision_point(self, x, y, direction):
+        possible_points = {}
+        for surface in self.get_surfaces():
+            possible_point = surface.find_collision_point(x,y,direction)
+            if possible_point != None:
+                pos_x, pos_y = possible_point
+                poss_dist = self.dist_to_collision(self, x, y, pos_x, pox_y)
+                possible_points[poss_dist] = possible_point
+        return possible_points[min(possible_points)]
+    
     def dist_to_boundary(self, x, y, direction):
         list_of_distances = []
         surfaces = self.get_surfaces()
         for surface in surfaces:
             dist = surface[0].dist_to_boundary(x, y, direction)
-            if not dist == None:
+            if type(dist) == float or type(dist) == int:
                 list_of_distances.append(dist)
+                if dist == 0:
+                    print 'x,y:', x,y, 'is on the boundary'
         return min(list_of_distances)
 
 
@@ -255,7 +266,7 @@ class Circle(Surface):
 
 
         # on boundary: return point
-        if (x_input - self.getX())**2 + (y_input - self.getY())**2 == self.get_rad()**2:
+        if abs((x_input - self.getX())**2 + (y_input - self.getY())**2 - self.get_rad()**2) < 0.0001:
             return (x_input, y_input)
 
         # just to clean things up
@@ -289,5 +300,5 @@ class Circle(Surface):
             # check to make sure it's a positive distance
             
         else:
-            #print 'all collisions were negative direction'
+            print 'no circle collisions found'
             return None

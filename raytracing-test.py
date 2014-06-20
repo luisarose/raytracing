@@ -350,7 +350,9 @@ def testGeometry():
 
     # generate geometry: circle cell inside a square cell (w/ circle cutout)
     box = Rectangle(0,0,10,10)
+    print 'made box'
     G = Geometry(box)
+    print 'made geometry'
     cell1 = Cell()
     cell1.add_surface(Circle(0,0,5),False)
     cell2 = Cell()
@@ -361,7 +363,22 @@ def testGeometry():
     cell2_id = G.generate_ID('next_cell_ID')
     G.add_cell(cell1, cell1_id)
     G.add_cell(cell2, cell2_id)
-    print str(G)
+
+    G.make_single_track(-5, -5, 45)
+    tracks = G.get_tracks()
+    # dictionary with one key: 1
+    segments = tracks[1].get_segments()
+    # dictionary with keys 1-3
+    print segments
+    print 'starting pt', segments[1].get_start()
+    print 'endpt', segments[1].get_endpt()
+    print 'starting pt', segments[2].get_start()
+    print 'endpt', segments[2].get_endpt()
+    print 'starting pt', segments[3].get_start()
+    print 'endpt', segments[3].get_endpt()
+    # omg
+    
+
     
 
 ##testSurface()
