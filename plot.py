@@ -59,16 +59,13 @@ def simple_plot(cell, direction):
 def plot_tracks(geometry, directions, track_spacing):
     """directions = list of directions to look at"""
 
-    print "here we go"
     num_dir = len(directions)
     num_cells = len(geometry.get_cells())
     colors = ['b', 'r', 'c', 'm', 'y', 'g', 'k', 'pink']
     
     for i in xrange(num_dir):
         geometry.make_tracks(directions[i], track_spacing)
-    print 'just made tracks. proof:'
     num_tracks = len(geometry.get_tracks())
-
     for j in xrange(1, num_tracks+1):
         track = geometry.get_tracks()[j]
         # look at each track
@@ -86,5 +83,6 @@ def plot_tracks(geometry, directions, track_spacing):
             plt.plot([x_0, x_f], [y_0, y_f], color=colors[cell_ID])
             
     plt.show()
-    print 'shouldve just plotted??'
-            
+
+    # currently has correct shape but a lot of wrong lines (both colors). needs debugging!
+    # also: doesn't support angles that are multiples of 90 right now
