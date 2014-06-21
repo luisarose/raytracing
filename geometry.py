@@ -78,13 +78,13 @@ class Geometry():
         # directions treated as "positive angles"
         if rad_dir >= 0 and rad_dir <= math.pi*0.5:
             # moving up + right
-            x_init = 0
+            x_init = self.get_xmin()
             pos_ang = True
         elif rad_dir >= 1.5*math.pi and rad_dir <= 2*math.pi:
             # moving down + left: flip direction
             direction = direction - 180
             rad_dir = math.radians(direction)
-            x_init = 0
+            x_init = self.get_xmin()
             pos_ang = True
 
         # directions treated as "negative angles"
@@ -96,22 +96,25 @@ class Geometry():
             pos_ang = False
             
         elif rad_dir > math.pi*0.5 and rad_dir < math.pi:
+            print "Working on this tricky case 1"
             # moving left + up
             x_init = self.get_xmax()
+            print x_init
             pos_ang = False
     
         # set spacing along sides and bottom
-        y_spacing = float(track_spacing)/math.cos(rad_dir)
-        x_spacing = float(track_spacing)/math.sin(rad_dir)
+        y_spacing = abs(float(track_spacing)/math.cos(rad_dir))
+        x_spacing = abs(float(track_spacing)/math.sin(rad_dir))
 
         # begin laying down tracks along one side, starting from top
         # (but first moving down one full trackspacing - no point in having
         # a track move upwards from the top)
         yval = self.get_ymax() - y_spacing
+        print yval
 
         # if positive angle, start at left; negative, start at right
-        while yval >=0: 
-            make_single_track(x_init, yval, direction)
+        while yval >= self.get_ymin(): 
+            self.make_single_track(x_init, yval, direction)
             yval -= y_spacing
             # yval should now be below the edge of the bounding box
 
@@ -122,24 +125,25 @@ class Geometry():
         if pos_ang:
 
             # find collision point along the ray from yval (the ray that would start below the bounding box)
-            x_start = min_y_plane.find_collision_point(0, yval, direction)
+            x_start = min_y_plane.find_collision_point(self.get_xmin(), yval, direction)
+
             xval = x_start[0]
             while xval < self.get_xmax():
-                make_single_track(xval, 0, direction)
+                self.make_single_track(xval, self.get_ymin(), direction)
                 xval += x_spacing
 
         # if neg: move right to left across bottom
         if not pos_ang:
 
             # find collision point along the ray from yval (the ray that would start below the bounding box)
-            x_start = min_y_plane.find_collision_point(0, yval, direction)
+            x_start = min_y_plane.find_collision_point(self.get_xmin(), yval, direction)
             xval = x_start[0]
             # this can be OUTSIDE the bounding box because we're going to move in
 
             xval -= x_spacing
             # now we're at the actual starting point
-            while xval > 0:
-                make_single_track(xval, 0, direction)
+            while xval > self.get_xmin():
+                self.make_single_track(xval, self.get_ymin(), direction)
                 xval -= x_spacing
                 
     def make_single_track(self, x_0, y_0, direction):
@@ -159,7 +163,7 @@ class Geometry():
         ID = self.generate_ID('next_track_ID')
 
         # create track
-        new_track = Track(x_0, y_0, x_1, y_1, ID)
+        new_track = Track(x_0, y_0, x_1, y_1, direction, ID)
 
         # add to dictionary of tracks
         self.tracks[ID] = new_track
@@ -192,11 +196,12 @@ class Geometry():
         return self.tracks
 
 class Track():
-    def __init__(self, x_0, y_0, x_1, y_1, ID):
+    def __init__(self, x_0, y_0, x_1, y_1, direction, ID):
         self.start = (x_0, y_0)
         self.endpt = (x_1, y_1)
         self.ID = ID
         self.segments = {}
+        self.direction = direction
     def get_start(self):
         return self.start
     def get_endpt(self):
@@ -207,6 +212,8 @@ class Track():
         self.segments[ID] = segment
     def get_segments(self):
         return self.segments
+    def get_direction(self):
+        return self.direction
     def num_segments(self):
         return len(self.segments)
 

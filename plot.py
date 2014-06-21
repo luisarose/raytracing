@@ -1,6 +1,7 @@
 from raytracing import *
 from surfaces import *
 from cells import *
+from geometry import *
 
 import math
 import numpy
@@ -53,4 +54,37 @@ def plot(cell, direction, xmin, xmax, ymin, ymax, step):
 def simple_plot(cell, direction):
     """Takes in cell and direction, plots on a graph of -5 to 5 for
         both x and y. Step size is 0.1"""
-    plot(cell, direction, -5, 5, -5, 5, 0.1)
+    plot(cell, direction, -5, 5, -5, 5, 0.1)    
+
+def plot_tracks(geometry, directions, track_spacing):
+    """directions = list of directions to look at"""
+
+    print "here we go"
+    num_dir = len(directions)
+    num_cells = len(geometry.get_cells())
+    colors = ['b', 'r', 'c', 'm', 'y', 'g', 'k', 'pink']
+    
+    for i in xrange(num_dir):
+        geometry.make_tracks(directions[i], track_spacing)
+    print 'just made tracks. proof:'
+    num_tracks = len(geometry.get_tracks())
+
+    for j in xrange(1, num_tracks+1):
+        track = geometry.get_tracks()[j]
+        # look at each track
+        
+        for k in track.get_segments():
+            segment = track.get_segments()[k]
+            # look at each segment
+            x_0, y_0 = segment.get_start()
+            x_f, y_f = segment.get_endpt()
+            direction = track.get_direction()
+            x_step = 0.0001*math.cos(math.radians(direction))
+            y_step = 0.0001*math.sin(math.radians(direction))
+            cell_ID = geometry.which_cell(x_0, y_0, track.get_direction())[0]
+            # cell ID determines color of segment
+            plt.plot([x_0, x_f], [y_0, y_f], color=colors[cell_ID])
+            
+    plt.show()
+    print 'shouldve just plotted??'
+            
