@@ -421,11 +421,11 @@ def testPlotTracks():
     print 'made geometry'
 
     # make list of directions to plot
-    dir_list = [15, 30, 45, 60, 75, 105, 120, 135, 150, 165]
+    dir_list = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165]
 
-    test_dir_list = [105]
+    test_dir_list = [0, 90]
     print 'about to plot'
-    plot_tracks(G, dir_list, 0.2)
+    plot_tracks(G, dir_list, 0.01)
     print 'done'
     
 

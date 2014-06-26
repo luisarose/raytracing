@@ -68,29 +68,28 @@ class Geometry():
         dist_to_edge = min(dist_to_edges)
         return min(dist_to_edge, current_cell.dist_to_boundary(x, y, direction))    
     def make_tracks(self, direction, track_spacing):
-        """Asserts that direction is between 0 and 360 degrees.
+        """Asserts that direction is between 0 and 360 degrees. [0, 360]
         Track spacing is measured across parallel."""
         assert direction >= 0
         assert direction <= 360
         rad_dir = math.radians(direction)
 
-
         # directions treated as "positive angles"
-        if rad_dir >= 0 and rad_dir <= math.pi*0.5:
+        # includes 0 and 180 (and 360)
+        if rad_dir >= 0 and rad_dir < math.pi*0.5 or direction == 360:
             # moving up + right
-            print "positive angle, 0 to 90"
             x_init = self.get_xmin()
             pos_ang = True
-        elif rad_dir >= math.pi and rad_dir <= 1.5*math.pi:
+        elif rad_dir >= math.pi and rad_dir < 1.5*math.pi:
             # moving down + left: flip direction
-            print "positive angle, 180 to 270"
             direction = direction - 180
             rad_dir = math.radians(direction)
             x_init = self.get_xmin()
             pos_ang = True
 
         # directions treated as "negative angles"
-        elif rad_dir > 1.5*math.pi and rad_dir < 2*math.pi:
+        # includes 90 and 270
+        elif rad_dir >= 1.5*math.pi and rad_dir < 2*math.pi:
             # moving down + right: flip direction
             print "negative direction, 270 to 360"
             direction = direction - 180
@@ -98,59 +97,78 @@ class Geometry():
             x_init = self.get_xmax()
             pos_ang = False
             
-        elif rad_dir > math.pi*0.5 and rad_dir < math.pi:
+        elif rad_dir >= math.pi*0.5 and rad_dir < math.pi:
             print "negative direction, 90 to 180"
             # moving left + up
             x_init = self.get_xmax()
-            print x_init
+            print 'HERE I AM'
+            print rad_dir
             pos_ang = False
     
         # set spacing along sides and bottom
-        y_spacing = abs(float(track_spacing)/math.cos(rad_dir))
-        x_spacing = abs(float(track_spacing)/math.sin(rad_dir))
+        x_spacing = 0
+        y_spacing = 0
+        
+        if direction%90 != 0:
+            y_spacing = abs(float(track_spacing)/math.cos(rad_dir))
+            x_spacing = abs(float(track_spacing)/math.sin(rad_dir))
 
+        elif direction%180 == 0:
+            y_spacing = abs(float(track_spacing)/math.cos(rad_dir))
+
+        elif direction%90 == 0:
+            x_spacing = abs(float(track_spacing)/math.sin(rad_dir))
+        
         # begin laying down tracks along one side, starting from top
         # (but first moving down one full trackspacing - no point in having
         # a track move upwards from the top)
         yval = self.get_ymax() - y_spacing
-        print yval
 
-        # if positive angle, start at left; negative, start at right
-        while yval >= self.get_ymin(): 
-            self.make_single_track(x_init, yval, direction)
-            yval -= y_spacing
-            # yval should now be below the edge of the bounding box
-        print 'yval is', yval
-
-        # YPlane representing minimum y value (bounding box)
-        min_y_plane = self.get_edges()[2][0]
-
-        # if pos: move left to right across bottom
-        if pos_ang:
-
-            # find collision point along the ray from yval (the ray that would start below the bounding box)
-            x_start = min_y_plane.find_collision_point(self.get_xmin(), yval, direction)
-
-            xval = x_start[0]
+        if direction == 90 or direction == 270:
+            # only need to make tracks across
+            xval = self.get_xmin()+float(track_spacing)/2
             while xval < self.get_xmax():
-                self.make_single_track(xval, self.get_ymin(), direction)
+                self.make_single_track(xval, self.get_ymin(), 90)
                 xval += x_spacing
 
-        # if neg: move right to left across bottom
-        if not pos_ang:
-            print yval
+        elif direction == 0 or direction == 180 or direction == 360:
+            # only need to make tracks going down
+            yval = (self.get_ymax())-float(track_spacing)/2
+            while yval > self.get_ymin():
+                self.make_single_track(self.get_xmin(), yval, direction)
+                yval -= y_spacing
 
-            # find collision point along the ray from yval (the ray that would start below the bounding box)
-            x_start = min_y_plane.find_collision_point(self.get_xmax(), yval, direction)
-            xval = x_start[0]
-            # this can be OUTSIDE the bounding box because we're going to move in
+        else:
+            # if positive angle, start at left; negative, start at right
+            while yval >= self.get_ymin():
+                self.make_single_track(x_init, yval, direction)
+                yval -= y_spacing
+                # yval should now be below the edge of the bounding box                
 
- #           xval -= x_spacing
-            # now we're at the actual starting point
-            while xval > self.get_xmin():
-                self.make_single_track(xval, self.get_ymin(), direction)
-                xval -= x_spacing
-                
+            # YPlane representing minimum y value (bounding box)
+            min_y_plane = self.get_edges()[2][0]
+
+            # if pos: move left to right across bottom
+            if pos_ang:
+                # ignore horizontal case (no need to make additional tracks)
+                if direction % 180 != 0:
+                    # find collision point along the ray from yval (the ray that would start below the bounding box)
+                    x_start = min_y_plane.find_collision_point(self.get_xmin(), yval, direction)
+                    xval = x_start[0]
+                    while xval < self.get_xmax():
+                        self.make_single_track(xval, self.get_ymin(), direction)
+                        xval += x_spacing
+
+            # if neg: move right to left across bottom
+            if not pos_ang:
+                # find collision point along the ray from yval (the ray that would start below the bounding box)
+                x_start = min_y_plane.find_collision_point(self.get_xmax(), yval, direction)
+                xval = x_start[0]
+                # starting point for the tracks being laid across bottom
+                while xval > self.get_xmin():
+                    self.make_single_track(xval, self.get_ymin(), direction)
+                    xval -= x_spacing
+                    
     def make_single_track(self, x_0, y_0, direction):
         """Takes in direction (angle in degrees) and start point (x,y)."""
         # first must find the endpoint of the track (on the far edge of bounding box)
@@ -161,6 +179,8 @@ class Geometry():
                 pot_x, pot_y = potential_endpt
                 dist = edge[0].dist_to_collision(x_0, y_0, pot_x, pot_y)
                 endpts[dist] = potential_endpt
+        if len(endpts) == 0:
+            return
         length, endpt = min(endpts), endpts[min(endpts)]
         x_1, y_1 = endpt
 
@@ -179,6 +199,9 @@ class Geometry():
     def generate_segments(self, track, x_0, y_0, direction):
         """Determines segments, creates Segment instances, and
         adds them to the Track instance"""
+
+        # Takes a long time to run if it's on a boundary (horizontal/vertical case)
+        
         tiny_x_step = 0.00001*math.cos(math.radians(direction))
         tiny_y_step = 0.00001*math.sin(math.radians(direction))
         temp_x, temp_y = x_0+tiny_x_step, y_0+tiny_y_step
