@@ -405,21 +405,27 @@ def testPlotTracks():
     G = Geometry(box)
     cell1 = Cell()
     cell1.add_surface(Circle(0,0,4),False)
+    cell1.add_surface(Circle(0,0,1),True)
     cell2 = Cell()
     cell2.add_surface(Circle(0,0,4),True)
     cell2.add_surface(box,False)
+    cell3 = Cell()
+    cell3.add_surface(Circle(0,0,1),False)
 
     cell1_id = G.generate_ID('next_cell_ID')
     cell2_id = G.generate_ID('next_cell_ID')
+    cell3_id = G.generate_ID('next_cell_ID')
     G.add_cell(cell1, cell1_id)
     G.add_cell(cell2, cell2_id)
+    G.add_cell(cell3, cell3_id)
     print 'made geometry'
 
     # make list of directions to plot
     dir_list = [15, 30, 45, 60, 75, 105, 120, 135, 150, 165]
 
+    test_dir_list = [105]
     print 'about to plot'
-    plot_tracks(G, dir_list, 0.1)
+    plot_tracks(G, dir_list, 0.2)
     print 'done'
     
 

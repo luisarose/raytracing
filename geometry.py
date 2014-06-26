@@ -78,10 +78,12 @@ class Geometry():
         # directions treated as "positive angles"
         if rad_dir >= 0 and rad_dir <= math.pi*0.5:
             # moving up + right
+            print "positive angle, 0 to 90"
             x_init = self.get_xmin()
             pos_ang = True
-        elif rad_dir >= 1.5*math.pi and rad_dir <= 2*math.pi:
+        elif rad_dir >= math.pi and rad_dir <= 1.5*math.pi:
             # moving down + left: flip direction
+            print "positive angle, 180 to 270"
             direction = direction - 180
             rad_dir = math.radians(direction)
             x_init = self.get_xmin()
@@ -90,13 +92,14 @@ class Geometry():
         # directions treated as "negative angles"
         elif rad_dir > 1.5*math.pi and rad_dir < 2*math.pi:
             # moving down + right: flip direction
+            print "negative direction, 270 to 360"
             direction = direction - 180
             rad_dir = math.radians(direction)
             x_init = self.get_xmax()
             pos_ang = False
             
         elif rad_dir > math.pi*0.5 and rad_dir < math.pi:
-            print "Working on this tricky case 1"
+            print "negative direction, 90 to 180"
             # moving left + up
             x_init = self.get_xmax()
             print x_init
@@ -117,6 +120,7 @@ class Geometry():
             self.make_single_track(x_init, yval, direction)
             yval -= y_spacing
             # yval should now be below the edge of the bounding box
+        print 'yval is', yval
 
         # YPlane representing minimum y value (bounding box)
         min_y_plane = self.get_edges()[2][0]
@@ -134,13 +138,14 @@ class Geometry():
 
         # if neg: move right to left across bottom
         if not pos_ang:
+            print yval
 
             # find collision point along the ray from yval (the ray that would start below the bounding box)
-            x_start = min_y_plane.find_collision_point(self.get_xmin(), yval, direction)
+            x_start = min_y_plane.find_collision_point(self.get_xmax(), yval, direction)
             xval = x_start[0]
             # this can be OUTSIDE the bounding box because we're going to move in
 
-            xval -= x_spacing
+ #           xval -= x_spacing
             # now we're at the actual starting point
             while xval > self.get_xmin():
                 self.make_single_track(xval, self.get_ymin(), direction)
@@ -174,17 +179,15 @@ class Geometry():
     def generate_segments(self, track, x_0, y_0, direction):
         """Determines segments, creates Segment instances, and
         adds them to the Track instance"""
-        tiny_x_step = 0.0001*math.cos(math.radians(direction))
-        tiny_y_step = 0.0001*math.sin(math.radians(direction))
+        tiny_x_step = 0.00001*math.cos(math.radians(direction))
+        tiny_y_step = 0.00001*math.sin(math.radians(direction))
         temp_x, temp_y = x_0+tiny_x_step, y_0+tiny_y_step
         # just so it doesn't return the boundary it starts on
-        num_segs = 0
         collision_point = 'start'
         while True:
             if not self.in_geometry(temp_x, temp_y, direction):
                 break
             current_cell = self.which_cell(temp_x, temp_y, direction)[1]
-            num_segs += 1
             collision_point = current_cell.find_collision_point(temp_x, temp_y, direction)
             x_col, y_col = collision_point
             ID = self.generate_ID('next_segment_ID')

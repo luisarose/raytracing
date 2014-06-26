@@ -80,7 +80,7 @@ def plot_tracks(geometry, directions, track_spacing):
             y_step = 0.0001*math.sin(math.radians(direction))
             cell_ID = geometry.which_cell(x_0, y_0, track.get_direction())[0]
             # cell ID determines color of segment
-            plt.plot([x_0, x_f], [y_0, y_f], color=colors[cell_ID])
+            plt.plot([x_0, x_f], [y_0, y_f], color=colors[cell_ID-1])
             
     plt.show()
 
