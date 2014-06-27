@@ -395,7 +395,6 @@ def testGeometry():
 
     tracks = G.get_tracks()
 
-    print len(tracks)
 
 def testPlotTracks():
     """Test plotting tracks"""
@@ -420,12 +419,66 @@ def testPlotTracks():
     G.add_cell(cell3, cell3_id)
     print 'made geometry'
 
+
+    G2 = Geometry(box)
+    XP1 = XPlane(0)
+    
+    cell1a = Cell()
+    cell1a.add_surface(Circle(0,0,4),False)
+    cell1a.add_surface(Circle(0,0,1),True)
+    cell1a.add_surface(XP1, True)
+    
+    cell1b = Cell()
+    cell1b.add_surface(Circle(0,0,4),False)
+    cell1b.add_surface(Circle(0,0,1),True)
+    cell1b.add_surface(XP1, False)
+    
+    cell2a = Cell()
+    cell2a.add_surface(Circle(0,0,4),True)
+    cell2a.add_surface(box,False)
+    cell2a.add_surface(XP1,True)
+    
+    cell2b = Cell()
+    cell2b.add_surface(Circle(0,0,4),True)
+    cell2b.add_surface(box,False)
+    cell2b.add_surface(XP1,False)
+    
+    cell3a = Cell()
+    cell3a.add_surface(Circle(0,0,1),False)
+    cell3a.add_surface(XP1,False)
+    
+    cell3b = Cell()
+    cell3b.add_surface(Circle(0,0,1),False)
+    cell3b.add_surface(XP1,True)
+
+    cell1a_id = G2.generate_ID('next_cell_ID')
+    cell1b_id = G2.generate_ID('next_cell_ID')
+    cell2a_id = G2.generate_ID('next_cell_ID')
+    cell2b_id = G2.generate_ID('next_cell_ID')
+    cell3a_id = G2.generate_ID('next_cell_ID')
+    cell3b_id = G2.generate_ID('next_cell_ID')
+    G2.add_cell(cell1a, cell1a_id)
+    G2.add_cell(cell1b, cell1b_id)
+    G2.add_cell(cell2a, cell2a_id)
+    G2.add_cell(cell2b, cell2b_id)
+    G2.add_cell(cell3a, cell3a_id)
+    G2.add_cell(cell3b, cell3b_id)
+    print 'made geometry'
+
+
     # make list of directions to plot
     dir_list = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165]
 
+    dir_list_2 = []
+    tempdir = 0
+
     test_dir_list = [0, 90]
+##    print 'about to plot'
+##    plot_tracks(G, dir_list, 0.3)
+##    print 'done'
+
     print 'about to plot'
-    plot_tracks(G, dir_list, 0.01)
+    plot_tracks(G2, dir_list, 0.3)
     print 'done'
     
 

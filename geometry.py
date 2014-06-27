@@ -91,18 +91,14 @@ class Geometry():
         # includes 90 and 270
         elif rad_dir >= 1.5*math.pi and rad_dir < 2*math.pi:
             # moving down + right: flip direction
-            print "negative direction, 270 to 360"
             direction = direction - 180
             rad_dir = math.radians(direction)
             x_init = self.get_xmax()
             pos_ang = False
             
         elif rad_dir >= math.pi*0.5 and rad_dir < math.pi:
-            print "negative direction, 90 to 180"
             # moving left + up
             x_init = self.get_xmax()
-            print 'HERE I AM'
-            print rad_dir
             pos_ang = False
     
         # set spacing along sides and bottom
@@ -126,14 +122,14 @@ class Geometry():
 
         if direction == 90 or direction == 270:
             # only need to make tracks across
-            xval = self.get_xmin()+float(track_spacing)/2
+            xval = self.get_xmin()+float(track_spacing)
             while xval < self.get_xmax():
                 self.make_single_track(xval, self.get_ymin(), 90)
                 xval += x_spacing
 
         elif direction == 0 or direction == 180 or direction == 360:
             # only need to make tracks going down
-            yval = (self.get_ymax())-float(track_spacing)/2
+            yval = (self.get_ymax())-float(track_spacing)
             while yval > self.get_ymin():
                 self.make_single_track(self.get_xmin(), yval, direction)
                 yval -= y_spacing
