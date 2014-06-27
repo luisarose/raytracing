@@ -56,17 +56,18 @@ def simple_plot(cell, direction):
         both x and y. Step size is 0.1"""
     plot(cell, direction, -5, 5, -5, 5, 0.1)    
 
-def plot_tracks(geometry, directions, track_spacing):
+def make_and_plot_tracks(geometry, directions, track_spacing):
     """Takes in a geometry (with cells), a list of direction, and track spacing.
     directions = list of directions to lay tracks
     Creates tracks for all directions and plots them."""
 
     num_dir = len(directions)
-    num_cells = len(geometry.get_cells())
-    colors = ['b', 'r', 'c', 'm', 'y', 'g', 'k', 'pink']
-    
     for i in xrange(num_dir):
         geometry.make_tracks(directions[i], track_spacing)
+    plot_tracks(geometry)
+    
+def plot_tracks(geometry):
+    colors = ['b', 'r', 'c', 'm', 'y', 'g', 'k', 'pink']
     num_tracks = len(geometry.get_tracks())
     for j in xrange(1, num_tracks+1):
         track = geometry.get_tracks()[j]

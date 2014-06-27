@@ -459,14 +459,14 @@ def testPlotTracks():
         tempdir += 10
 
     print 'about to plot G with dir_list and 0.3 spacing'
-    plot_tracks(G, dir_list, 0.3)
+    make_and_plot_tracks(G, dir_list, 0.3)
     print 'done'
 
 
 #### 0 and 90 cause infinite loops.. current solution is just to move them over .0001 ####
 
     print 'about to plot G2 with dir_list2 and 0.5 spacing'
-    plot_tracks(G2, dir_list2, 0.5)
+    make_and_plot_tracks(G2, dir_list2, 0.5)
     print 'done'
     
 
