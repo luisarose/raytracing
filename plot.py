@@ -57,7 +57,9 @@ def simple_plot(cell, direction):
     plot(cell, direction, -5, 5, -5, 5, 0.1)    
 
 def plot_tracks(geometry, directions, track_spacing):
-    """directions = list of directions to look at"""
+    """Takes in a geometry (with cells), a list of direction, and track spacing.
+    directions = list of directions to lay tracks
+    Creates tracks for all directions and plots them."""
 
     num_dir = len(directions)
     num_cells = len(geometry.get_cells())

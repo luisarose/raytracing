@@ -71,6 +71,7 @@ class Geometry():
     
     def make_tracks(self, direction, track_spacing):
         """Asserts that direction is between 0 and 360 degrees. [0, 360]
+        Makes tracks for one given direction.
         Track spacing is measured across parallel."""
         assert direction >= 0
         assert direction <= 360
@@ -124,14 +125,14 @@ class Geometry():
 
         if direction == 90 or direction == 270:
             # only need to make tracks across
-            xval = self.get_xmin()+float(track_spacing)
+            xval = self.get_xmin()+0.00001
             while xval < self.get_xmax():
                 self.make_single_track(xval, self.get_ymin(), 90)
                 xval += x_spacing
 
         elif direction == 0 or direction == 180 or direction == 360:
             # only need to make tracks going down
-            yval = (self.get_ymax())-float(track_spacing)
+            yval = (self.get_ymax())-0.00001
             while yval > self.get_ymin():
                 self.make_single_track(self.get_xmin(), yval, direction)
                 yval -= y_spacing

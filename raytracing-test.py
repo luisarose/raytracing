@@ -364,11 +364,11 @@ def testGeometry():
     G.add_cell(cell1, cell1_id)
     G.add_cell(cell2, cell2_id)
 
-    G.make_tracks(45, 0.2)
-    G.make_tracks(90, .2)
-    G.make_tracks(0, .2)
-    G.make_tracks(22.5, 0.2)
-    G.make_tracks(67.5, 0.2)
+##    G.make_tracks(45, 0.2)
+##    G.make_tracks(90, .2)
+##    G.make_tracks(0, .2)
+##    G.make_tracks(22.5, 0.2)
+##    G.make_tracks(67.5, 0.2)
 
     tracks = G.get_tracks()
 
@@ -394,9 +394,8 @@ def testPlotTracks():
     G.add_cell(cell1, cell1_id)
     G.add_cell(cell2, cell2_id)
     G.add_cell(cell3, cell3_id)
-    print 'made geometry'
 
-
+    # complicated geometry: has 7 cells
     G2 = Geometry(box)
     XP1 = XPlane(0)
     
@@ -449,8 +448,6 @@ def testPlotTracks():
     G2.add_cell(cell3a, cell3a_id)
     G2.add_cell(cell3b, cell3b_id)
     G2.add_cell(cell4, cell4_id)
-    print 'made geometry'
-
 
     # make list of directions to plot
     dir_list = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165]
@@ -459,13 +456,16 @@ def testPlotTracks():
 
     while tempdir < 180:
         dir_list2.append(tempdir)
-        tempdir += 5
-    print dir_list2
-##    print 'about to plot'
-##    plot_tracks(G, dir_list, 0.3)
-##    print 'done'
+        tempdir += 10
 
-    print 'about to plot'
+    print 'about to plot G with dir_list and 0.3 spacing'
+    plot_tracks(G, dir_list, 0.3)
+    print 'done'
+
+
+#### 0 and 90 cause infinite loops.. current solution is just to move them over .0001 ####
+
+    print 'about to plot G2 with dir_list2 and 0.5 spacing'
     plot_tracks(G2, dir_list2, 0.5)
     print 'done'
     
