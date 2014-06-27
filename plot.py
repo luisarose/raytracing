@@ -69,20 +69,19 @@ def plot_tracks(geometry, directions, track_spacing):
     for j in xrange(1, num_tracks+1):
         track = geometry.get_tracks()[j]
         # look at each track
-        
         for k in track.get_segments():
             segment = track.get_segments()[k]
             # look at each segment
-            x_0, y_0 = segment.get_start()
-            x_f, y_f = segment.get_endpt()
             direction = track.get_direction()
             x_step = 0.0001*math.cos(math.radians(direction))
             y_step = 0.0001*math.sin(math.radians(direction))
+            # using x_step and y_step fixes boundary problems
+            x_0 = segment.get_start()[0] + x_step
+            y_0 = segment.get_start()[1] + y_step
+            x_f = segment.get_endpt()[0] - x_step
+            y_f = segment.get_endpt()[1] - y_step
             cell_ID = geometry.which_cell(x_0, y_0, track.get_direction())[0]
             # cell ID determines color of segment
             plt.plot([x_0, x_f], [y_0, y_f], color=colors[cell_ID-1])
             
     plt.show()
-
-    # currently has correct shape but a lot of wrong lines (both colors). needs debugging!
-    # also: doesn't support angles that are multiples of 90 right now

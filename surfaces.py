@@ -1,12 +1,11 @@
 import math
 
-class Surface():
-    # superclass containing different types of surface
-    # i.e. planes, circles, squares, etc.
-    
-    # ideally, make it so a meaningful Surface object can be created
-    # rather than only XPlane, YPlane, Circle objects
+# direction = angle in degrees, on interval [0, 360], measured CCW from pos x-axis.
 
+class Surface():
+    """Superclass containing other types of Surface: XPlane, YPlane,
+    Circle, Rectangle. Can also be initialized with 6 variables (a,
+    b, f, p, q, d)."""
     def __init__(self, a, b, f, p,q, d):
         self.a = a
         self.b = b
@@ -45,6 +44,7 @@ class Surface():
             new_x = x + math.cos(rad_dir)*0.0001
             new_y = x + math.cos(rad_dir)*0.0001
             return sense(self, new_x, new_y, direction)
+        
             # this DOES NOT work for cases where the
             # path is directly along a plane (infinite loop)
             
@@ -56,49 +56,40 @@ class Surface():
             return None
         x_col, y_col = self.find_collision_point(x_input, y_input, direction)
         return self.dist_to_collision(x_input, y_input, x_col, y_col)
-        
 
-# for an x-plane (a plane at a given x-val), the sense test checks
-# to see if the x-coordinate is greater than the plane's x-val
+
+
+
 class XPlane(Surface):
+    """Subclass of Surface. Takes the x value as parameter.
+    Sense test checks to see if the point is to the right."""
     def __init__(self, x_val):
         self.x_val = x_val
     def getX(self):
         return self.x_val
-    def __lt__(self, xplane):
-        assert isinstance(xplane, XPlane)
-        return self.getX() < xplane.getX()
-    def __gt__(self, xplane):
-        assert isinstance(xplane, XPlane)
-        return self.getX() > xplane.getX()
-    def __eq__(self, xplane):
-        if not isinstance(xplane, XPlane):
-            return False
-        return self.getX() == xplane.getX()
+    
     def sense(self, x_input, y_input, direction):
-        # direction is measured in degrees
-        # CCW from positive x-axis
         if x_input != self.getX():
             return x_input > self.getX()
         elif direction != 90 and direction != 270:
             x_new = x_input + 0.0001*math.cos(math.radians(direction))
             return x_new > self.getX()
         else:
-            # if the direction is directly along the plane,
-            # consider this case to be positive/"to the right"
+            # moving directly along plane = True
             return True
+        
     def find_collision_point(self, x_input, y_input, direction):
         """Returns the (x,y) location of the collision point in current direction."""
         if self.getX() == x_input:
             # it is already on the boundary
             return (x_input, y_input)
         elif self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) > 0:
+            # to the right and traveling right
             # this means it will never cross the boundary
-            # so it returns None, meaning infinity
             return None
         elif not self.sense(x_input, y_input, direction) and math.cos(math.radians(direction)) < 0:
+            # to the left and traveling left
             # this means it will never cross the boundary
-            # so it returns None, meaning infinity
             return None
         elif math.cos(math.radians(direction)) == 0:
             # this means it is moving parallel to the plane and will never reach it
@@ -110,21 +101,17 @@ class XPlane(Surface):
             y_col = y_input + (self.getX() - x_input)*math.tan(math.radians(direction))
             return (x_col, y_col)
 
+
+
+
 class YPlane(Surface):
+    """Subclass of Surface. Takes the y value as parameter.
+    Sense test checks to see if the point is above it."""
     def __init__(self, y_val):
         self.y_val = y_val
     def getY(self):
         return self.y_val
-    def __lt__(self, yplane):
-        assert isinstance(yplane, YPlane)
-        return self.getY() < yplane.getY()
-    def __gt__(self, yplane):
-        assert isinstance(yplane, YPlane)
-        return self.getY() > yplane.getY()
-    def __eq__(self, yplane):
-        if not isinstance(yplane, YPlane):
-            return False
-        return self.getY() == yplane.getY()
+    
     def sense(self, x_input, y_input, direction):
         if y_input != self.getY():
             return y_input > self.getY()
@@ -132,8 +119,7 @@ class YPlane(Surface):
             y_new = y_input + 0.0001*math.sin(math.radians(direction))
             return y_new > self.getY()
         else:
-            # if the direction is directly along the plane,
-            # consider this case to be positive/"to the right"
+            # moving directly along plane = True
             return True
 
     def find_collision_point(self, x_input, y_input, direction):
@@ -143,13 +129,13 @@ class YPlane(Surface):
             return (x_input, y_input)
         
         if self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) > 0:
+            # above and moving up
             # this means it will never cross the boundary
-            # so it returns None, meaning infinity
             return None
         
         elif not self.sense(x_input, y_input, direction) and math.sin(math.radians(direction)) < 0:
+            # below and moving down
             # this means it will never cross the boundary
-            # so it returns None, meaning infinity
             return None
         
         elif math.sin(math.radians(direction)) == 0:
@@ -162,7 +148,17 @@ class YPlane(Surface):
             y_col = self.getY()
             return (x_col, y_col)
 
+
+
+
+
 class Rectangle(Surface):
+    """Takes in the center, its horizontal length, and vertical length.
+        x_0, y_0 = center
+        x_len = length across (horizontal)
+        y_len = length down (vertical)
+
+        Made up of four planes, generated when it's initialized."""
     def __init__(self, x_0, y_0, x_len, y_len):
         self.center = (x_0, y_0)
         self.surfaces = [(XPlane(x_0-(x_len*0.5)),True), (XPlane(x_0 + (x_len*0.5)),False), (YPlane(y_0 - (y_len*0.5)),True), (YPlane(y_0 + (y_len*0.5)),False)]
@@ -176,38 +172,49 @@ class Rectangle(Surface):
         return self.y_len
     def get_surfaces(self):
         return self.surfaces
+    
     def sense(self, x, y, direction):
         surfaces = self.get_surfaces()
         for surface in surfaces:
             if surface[0].sense(x, y, direction) != surface[1]:
-                return True
-                # true means OUTSIDE the rectangle
-                
+            # if the point fails any of the 4 sense checks
+                return True # outside
         return False
-        # False means INSIDE the rectangle
+        
     def find_collision_point(self, x, y, direction):
+        """Finds collision point by making dictionary of distances and collision
+        points for each of the 4 boundaries. Returns the point with the minimum
+        distance that is not None (meaning there is no collision)."""
         possible_points = {}
         for surface in self.get_surfaces():
-            possible_point = surface.find_collision_point(x,y,direction)
+            possible_point = surface[0].find_collision_point(x,y,direction)
             if possible_point != None:
                 pos_x, pos_y = possible_point
-                poss_dist = self.dist_to_collision(self, x, y, pos_x, pox_y)
+                poss_dist = self.dist_to_collision(x, y, pos_x, pos_y)
                 possible_points[poss_dist] = possible_point
         return possible_points[min(possible_points)]
     
     def dist_to_boundary(self, x, y, direction):
+        """Similar to find_collision_point, but doesn't use dictionary since
+        the points don't matter."""
         list_of_distances = []
         surfaces = self.get_surfaces()
-        for surface in surfaces:
-            dist = surface[0].dist_to_boundary(x, y, direction)
+        for surface_tup in surfaces:
+            surface = surface_tup[0]
+            dist = surface.dist_to_boundary(x, y, direction)
             if type(dist) == float or type(dist) == int:
                 list_of_distances.append(dist)
-                if dist == 0:
-                    print 'x,y:', x,y, 'is on the boundary'
+        if len(list_of_distances) == 0:
+            return None
         return min(list_of_distances)
 
 
+
+
+
+
 class Circle(Surface):
+    """Subclass of Surface. Takes its center coordinates and radius as parameters."""
     def __init__(self, x_0, y_0, r):
         self.x_0 = x_0
         self.y_0 = y_0
@@ -221,46 +228,41 @@ class Circle(Surface):
         return self.radius
     def get_center(self):
         return self.center
+
+    
     def sense(self, x_input, y_input, direction):
         """Returns False for inside circle and True for outside. If the point is on the boundary of the circle,
             its sense depends on whether it's moving into or out of the circle. If the path is tangent to the circle,
             it is considered within the circle and returns False."""
-        
-        # first: determine the slope at the point, in case it's a boundary case.
-        # doing this here so it doesn't confuse the if/elif/else block later.
 
+        # simple cases first: inside or outside circle
         if self.get_rad()**2 < (x_input-self.getX())**2 + (y_input-self.getY())**2:
             return True
+        elif self.get_rad()**2 > (x_input-self.getX())**2 + (y_input-self.getY())**2:
+            return False
             # this means it is outside of the circle.
-            
+
+        # boundary cases
+
         elif (self.get_rad()**2 == (x_input-self.getX())**2):
-            slope_at_point = None
-            # this means it has a vertical slope at the point (so one of the two sides)
-
+            slope_at_point = None # vertical slope
         else:
-            slope_at_point = (self.getX()-x_input)/(self.get_rad()**2 - (x_input-self.getX())**2)**0.5           
-            
-        # simple case: it is NOT along the edges
-        if (x_input - self.getX())**2 + (y_input - self.getY())**2 != self.get_rad()**2:
-            return (x_input - self.getX())**2 + (y_input - self.getY())**2 > self.get_rad()**2
-            # just return if it's within or outside the circle
-
-        # next case: the circle has a vertical slope at (x,y), which matches the direction it is moving - special case of tangency.
-        elif slope_at_point == None and math.radians(direction) == math.pi/2 or slope_at_point == None and math.radians(direction) == 3*math.pi/2:
-            #it's tangent, with a vertical slope
+            slope_at_point = (self.getX()-x_input)/(self.get_rad()**2 - (x_input-self.getX())**2)**0.5 # calculates slope          
+        
+        # tangent path case - vertical slope
+        if slope_at_point == None and math.radians(direction) == math.pi/2 or slope_at_point == None and math.radians(direction) == 3*math.pi/2:
             return False
 
-        # need to check for tangency again here or else we get false negatives
+        # tangent path case - slope is not vertical
         elif type(slope_at_point) == float and math.atan(slope_at_point) == math.radians(direction):
-            # this means it is tangent to the circle
             return False
 
-        # final case: the slope exists (is not infinite). check to see what happens if we move it over a little.
+        # final case: the slope exists (is not vertical), on boundary, but path is not tangent to circle
+        # either entering or leaving circle - take small step and test again
         else:
             x_new = x_input + 0.0001*math.cos(math.radians(direction))
             y_new = y_input + 0.0001*math.sin(math.radians(direction))
             return self.sense(x_new, y_new, direction)
-            # recursive call but only once
 
     def find_collision_point(self, x_input, y_input, direction):
 
@@ -277,15 +279,16 @@ class Circle(Surface):
         # equation to find d:
         # d^2 + 2d(xcos + ysin - hcos - ksin) + (x-h)^2 + (y-k)^2 - r^2 = 0
 
+        # coefficients from the equation
         a = 1
         b = 2*(x_input*math.cos(dir_rad) + y_input*math.sin(dir_rad) - x_0*math.cos(dir_rad) - y_0*math.sin(dir_rad))
         c = (x_input - x_0)**2 + (y_input - y_0)**2 - r**2
 
         if (b**2 - 4*c) < 0:
             # no collision
-            #print 'quadratic showed no collisions'
             return None
 
+        # apply quadratic formula: d_plus is the greater distance, d_minus is the lesser (could be the same value)
         d_plus = (-b + (b**2 - 4*c)**0.5)/2
         d_minus = (-b - (b**2 - 4*c)**0.5)/2
 
@@ -296,7 +299,6 @@ class Circle(Surface):
             
         elif d_plus > 0:
             return (x_input + d_plus*math.cos(dir_rad), y_input + d_plus*math.sin(dir_rad))
-            # check to make sure it's a positive distance
             
         else:
             return None

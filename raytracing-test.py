@@ -290,7 +290,7 @@ def testCell():
 ##    print Cell1.get_surfaces()
 ##    print Cell2.get_surfaces()
 ##    print Cell3.get_surfaces()
-##
+
     # test in_cell
 
     # Cell1: just a circle
@@ -339,12 +339,12 @@ def test_plot():
     test_cell4.add_surface(Rectangle(0,0,3,3), True)
 
     # call simple_plot or plot
-    ##simple_plot(test_cell1, 0)
-    ##simple_plot(test_cell2, 0)
-    ##simple_plot(test_cell3, 0)
-    ##simple_plot(test_cell4, 0)
+    simple_plot(test_cell1, 0)
+    simple_plot(test_cell2, 0)
+    simple_plot(test_cell3, 0)
+    simple_plot(test_cell4, 0)
 
-    ##plot(test_cell, 0, -5, 10, -5, 5, 0.1)
+    plot(test_cell1, 0, -5, 10, -5, 5, 0.1)
 
 def testGeometry():
 
@@ -363,29 +363,6 @@ def testGeometry():
     cell2_id = G.generate_ID('next_cell_ID')
     G.add_cell(cell1, cell1_id)
     G.add_cell(cell2, cell2_id)
-
-##    G.make_single_track(-5, 0, 0)
-##    G.make_single_track(-5, -5, 45)
-##    tracks = G.get_tracks()
-##    # dictionary with two keys: 1, 2
-##    segments1 = tracks[1].get_segments()
-##    # dictionary with keys 1-3
-##    print segments1
-##    print 'starting pt', segments1[1].get_start()
-##    print 'endpt', segments1[1].get_endpt()
-##    print 'starting pt', segments1[2].get_start()
-##    print 'endpt', segments1[2].get_endpt()
-##    print 'starting pt', segments1[3].get_start()
-##    print 'endpt', segments1[3].get_endpt()
-##    segments2 = tracks[2].get_segments()
-##    print segments2
-##    # dictionary with keys 4-6
-##    print 'starting pt', segments2[4].get_start()
-##    print 'endpt', segments2[4].get_endpt()
-##    print 'starting pt', segments2[5].get_start()
-##    print 'endpt', segments2[5].get_endpt()
-##    print 'starting pt', segments2[6].get_start()
-##    print 'endpt', segments2[6].get_endpt()
 
     G.make_tracks(45, 0.2)
     G.make_tracks(90, .2)
@@ -437,12 +414,15 @@ def testPlotTracks():
     cell2a.add_surface(Circle(0,0,4),True)
     cell2a.add_surface(box,False)
     cell2a.add_surface(XP1,True)
+    cell2a.add_surface(Rectangle(0,0,8,8),False)
     
     cell2b = Cell()
     cell2b.add_surface(Circle(0,0,4),True)
     cell2b.add_surface(box,False)
     cell2b.add_surface(XP1,False)
-    
+    cell2b.add_surface(Rectangle(0,0,8,8),False)
+
+
     cell3a = Cell()
     cell3a.add_surface(Circle(0,0,1),False)
     cell3a.add_surface(XP1,False)
@@ -451,34 +431,42 @@ def testPlotTracks():
     cell3b.add_surface(Circle(0,0,1),False)
     cell3b.add_surface(XP1,True)
 
+    cell4 = Cell()
+    cell4.add_surface(Rectangle(0,0,8,8),True)
+    cell4.add_surface(box, False)
+
     cell1a_id = G2.generate_ID('next_cell_ID')
     cell1b_id = G2.generate_ID('next_cell_ID')
     cell2a_id = G2.generate_ID('next_cell_ID')
     cell2b_id = G2.generate_ID('next_cell_ID')
     cell3a_id = G2.generate_ID('next_cell_ID')
     cell3b_id = G2.generate_ID('next_cell_ID')
+    cell4_id = G2.generate_ID('next_cell_ID')
     G2.add_cell(cell1a, cell1a_id)
     G2.add_cell(cell1b, cell1b_id)
     G2.add_cell(cell2a, cell2a_id)
     G2.add_cell(cell2b, cell2b_id)
     G2.add_cell(cell3a, cell3a_id)
     G2.add_cell(cell3b, cell3b_id)
+    G2.add_cell(cell4, cell4_id)
     print 'made geometry'
 
 
     # make list of directions to plot
     dir_list = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165]
-
-    dir_list_2 = []
+    dir_list2 = []
     tempdir = 0
 
-    test_dir_list = [0, 90]
+    while tempdir < 180:
+        dir_list2.append(tempdir)
+        tempdir += 5
+    print dir_list2
 ##    print 'about to plot'
 ##    plot_tracks(G, dir_list, 0.3)
 ##    print 'done'
 
     print 'about to plot'
-    plot_tracks(G2, dir_list, 0.3)
+    plot_tracks(G2, dir_list2, 0.5)
     print 'done'
     
 

@@ -51,13 +51,14 @@ class Geometry():
     def in_geometry(self, x, y, direction):
         """Returns True if the point is in the geometry."""
         return not self.get_bounding_box().sense(x, y, direction)
+    
     def which_cell(self, x, y, direction):
         """Determines which cell the point is in."""
         for cell in self.get_cells():
             if cell[1].in_cell(x, y, direction):
                 return cell
-        # is it possible to not be in a cell? probably.
         return None
+    
     def dist_to_boundary(self, x, y, direction):
         current_cell = self.which_cell(x, y, direction)
         dist_to_edges = []
@@ -66,7 +67,8 @@ class Geometry():
             if dist != None:
                 dist_to_edges.append(dist)
         dist_to_edge = min(dist_to_edges)
-        return min(dist_to_edge, current_cell.dist_to_boundary(x, y, direction))    
+        return min(dist_to_edge, current_cell.dist_to_boundary(x, y, direction))
+    
     def make_tracks(self, direction, track_spacing):
         """Asserts that direction is between 0 and 360 degrees. [0, 360]
         Track spacing is measured across parallel."""
@@ -218,6 +220,8 @@ class Geometry():
         return self.tracks
 
 class Track():
+    """A track spans the entire bounding box and has multiple segments.
+    Initialized with its startpoint, endpoint, direction, and ID."""
     def __init__(self, x_0, y_0, x_1, y_1, direction, ID):
         self.start = (x_0, y_0)
         self.endpt = (x_1, y_1)
@@ -240,6 +244,7 @@ class Track():
         return len(self.segments)
 
 class Segment(Track):
+    """A segment is part of a track that is only in one cell."""
     def __init__(self, x_0, y_0, x_1, y_1, ID):
         self.start = (x_0, y_0)
         self.endpt = (x_1, y_1)
