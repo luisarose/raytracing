@@ -462,8 +462,7 @@ def testPlotTracks():
     make_and_plot_tracks(G, dir_list, 0.3)
     print 'done'
 
-
-#### 0 and 90 cause infinite loops.. current solution is just to move them over .0001 ####
+    #### 0 and 90 cause infinite loops.. current solution is just to move them over .0001 ####
 
     print 'about to plot G2 with dir_list2 and 0.5 spacing'
     make_and_plot_tracks(G2, dir_list2, 0.5)
@@ -484,3 +483,6 @@ def testPlotTracks():
 ##test_plot()
 ##print "done plotting"
 testPlotTracks()
+
+# start using this with unittest
+
