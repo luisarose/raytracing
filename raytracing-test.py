@@ -7,6 +7,8 @@ from geometry import *
 import numpy
 import matplotlib.pyplot as plt
 
+##### Everything in this file can now be replaced by test.py and testplot.py!
+
 def testSurface():
     S1 = Surface(0, 0, 0, 3, 0, -3) # XPlane(1)
     S2 = Surface(0, 0, 0, 0, 2, 1)  # YPlane(-0.5)

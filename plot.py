@@ -53,7 +53,7 @@ def plot(cell, direction, xmin, xmax, ymin, ymax, step):
 
 def simple_plot(cell, direction):
     """Takes in cell and direction, plots on a graph of -5 to 5 for
-        both x and y. Step size is 0.1"""
+    both x and y. Step size is 0.1"""
     plot(cell, direction, -5, 5, -5, 5, 0.1)    
 
 def make_and_plot_tracks(geometry, directions, track_spacing):
