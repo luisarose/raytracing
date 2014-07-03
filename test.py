@@ -5,10 +5,12 @@ from plot import *
 from geometry import *
 import unittest
 
+
 class surface_tests(unittest.TestCase):
 
     def setUp(self):
-        """Creates surface instances for use in this set of test cases."""
+        """setUp for all tests"""
+        # Creates surface instances for use in this set of test cases.
         self.XP1 = XPlane(0)
         self.XP2 = XPlane(2)
         self.XP3 = XPlane(-2)
@@ -26,14 +28,14 @@ class surface_tests(unittest.TestCase):
         self.C3 = Circle(-1,10,3)
 
     def test_xplane_getters(self):
-        """Tests the getX method of XPlane."""
+        # Tests the getX method of XPlane.
         self.failUnless(self.XP1.getX() == 0 and self.XP2.getX() == 2 and self.XP3.getX() == -2)
         
-    def test_xplane_sense_simple(self):
-        """Simple cases, where the point is either to the right
-        or to the left of the XPlane. Direction doesn't matter.
-        False = to the left
-        True = to the right"""
+    def test_xplane_sense_simple_cases(self):
+        # Simple cases, where the point is either to the right
+        # or to the left of the XPlane. Direction doesn't matter.
+        # False = to the left
+        # True = to the right
         self.assertTrue(self.XP1.sense(0.00001, 0, 0))
         self.assertTrue(self.XP2.sense(2.01, 0, 0))
         self.assertTrue(self.XP3.sense(-1.99, 0, 0))
@@ -42,11 +44,11 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.XP2.sense(1.9, 0, 0))
         self.assertFalse(self.XP3.sense(-2.01, 0, 0))
 
-    def test_xplane_sense_boundary(self):
-        """Cases where the point is on the XPlane and is either moving
-        to the right or left. Direction (left/right) determines sense.
-        False = moving left
-        True = moving right"""
+    def test_xplane_sense_boundary_cases(self):
+        # Cases where the point is on the XPlane and is either moving
+        # to the right or left. Direction (left/right) determines sense.
+        # False = moving left
+        # True = moving right
         self.assertTrue(self.XP1.sense(0, 0, -89))
         self.assertTrue(self.XP1.sense(0, 0, 89))
         self.assertTrue(self.XP2.sense(2, 0, -89))
@@ -61,9 +63,9 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.XP3.sense(-2.0, 0, 91))
         self.assertFalse(self.XP3.sense(-2.0, 0, -90.1))
 
-    def test_xplane_sense_boundary2(self):
-        """Cases where the point is on the XPlane and is traveling
-        directly along the plane. Returns True."""
+    def test_xplane_sense_boundary_path_cases(self):
+        # Cases where the point is on the XPlane and is traveling
+        # directly along the plane. Returns True.
         self.assertTrue(self.XP1.sense(0, 0, 90))
         self.assertTrue(self.XP1.sense(0, 0, 270))
         self.assertTrue(self.XP2.sense(2, 0, 90))
@@ -73,8 +75,8 @@ class surface_tests(unittest.TestCase):
         
         
     def test_xplane_dist_to_boundary(self):
-        """Takes the point x, y and the direction of motion.
-        Returns None if the path doesn't collide with the XPlane."""
+        # Takes the point x, y and the direction of motion.
+        # Returns None if the path doesn't collide with the XPlane.
         self.assertEqual(self.XP1.dist_to_boundary(1, 0, 180),1)
         self.assertEqual(self.XP1.dist_to_boundary(1, 0, 0), None)
         self.assertTrue(self.XP1.dist_to_boundary(1, 0, 150) > 1)
@@ -92,13 +94,13 @@ class surface_tests(unittest.TestCase):
 
 
     def test_yplane_getters(self):
-        """Tests the getY method of YPlane."""
+        # Tests the getY method of YPlane
         self.failUnless(self.YP1.getY() == 0 and self.YP2.getY() == 2 and self.YP3.getY() == -2)
         
-    def test_yplane_sense_simple(self):
-        """Simple cases: where the point is either above or below the YPlane.
-        Direction doesn't matter; position determines sense.
-        False = below / True = above"""
+    def test_yplane_sense_simple_cases(self):
+        # Simple cases: where the point is either above or below the YPlane.
+        # Direction doesn't matter; position determines sense.
+        # False = below / True = above
         self.assertTrue(self.YP1.sense(0, 0.00001, 0))
         self.assertTrue(self.YP2.sense(0, 2.01, 0))
         self.assertTrue(self.YP3.sense(0, -1.99, 0))
@@ -107,9 +109,9 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.YP2.sense(0, 1.9, 0))
         self.assertFalse(self.YP3.sense(0, -2.01, 0))
 
-    def test_yplane_sense_boundary(self):
-        """Cases where the point is on the YPlane and is either moving up or down.
-        Direction determines sense. False = moving down / True = moving up"""
+    def test_yplane_sense_boundary_cases(self):
+        # Cases where the point is on the YPlane and is either moving up or down.
+        # Direction determines sense. False = moving down / True = moving up
         self.assertTrue(self.YP1.sense(0, 0, 0.1))
         self.assertTrue(self.YP1.sense(0, 0, 179.9))
         self.assertTrue(self.YP2.sense(0, 2, 0.1))
@@ -124,9 +126,9 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.YP3.sense(0, -2, -0.01))
         self.assertFalse(self.YP3.sense(0, -2, -179))
 
-    def test_yplane_sense_boundary2(self):
-        """Cases where the point is on the YPlane and is traveling
-        directly along the plane. Returns True."""
+    def test_yplane_sense_boundary_path_cases(self):
+        # Cases where the point is on the YPlane and is traveling
+        # directly along the plane. Returns True.
         self.assertTrue(self.YP1.sense(0, 0, 0))
         self.assertTrue(self.YP1.sense(0, 0, 180))
         self.assertTrue(self.YP2.sense(0, 2, 0))
@@ -136,8 +138,8 @@ class surface_tests(unittest.TestCase):
         
         
     def test_yplane_dist_to_boundary(self):
-        """Takes the point x, y and the direction of motion.
-        Returns None if the path doesn't collide with the YPlane."""
+        # Takes the point x, y and the direction of motion.
+        # Returns None if the path doesn't collide with the YPlane.
         self.assertEqual(self.YP1.dist_to_boundary(0, 1, 270),1)
         self.assertEqual(self.YP1.dist_to_boundary(0, 1, 0), None)
         self.assertTrue(self.YP1.dist_to_boundary(0, 1, -20) > 1)
@@ -154,8 +156,8 @@ class surface_tests(unittest.TestCase):
         self.assertEqual(self.YP3.dist_to_boundary(0, -2, 90),0)
 
     def test_rectangle_sense(self):
-        """Tests the sense method for Rectangle objects (subclass of Surface).
-        Same sense rules apply as with 4 individual planes"""
+        # Tests the sense method for Rectangle objects (subclass of Surface).
+        # Same sense rules apply as with 4 individual planes
         self.assertTrue(self.R1.sense(2, 2, 0))
         self.assertTrue(self.R2.sense(-3, 0, 0))
         self.assertTrue(self.R3.sense(-2, -5, 0))
@@ -168,7 +170,7 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.R3.sense(0,-3,90))
 
     def test_circle_getters(self):
-        """Tests the getX, getY, get_center, and get_rad methods."""
+        # Tests the getX, getY, get_center, and get_rad methods.
         self.assertEqual(self.C1.getX(),0)
         self.assertEqual(self.C1.getY(),0)
         self.assertEqual(self.C1.get_center(),(0,0))
@@ -185,8 +187,8 @@ class surface_tests(unittest.TestCase):
         self.assertEqual(self.C3.get_rad(),3)
 
     def test_circle_sense_false(self):
-        """Tests sense for points that are inside the circle.
-        Direction doesn't matter. All should return False."""
+        # Tests sense for points that are inside the circle.
+        # Direction doesn't matter. All should return False.
         self.assertFalse(self.C1.sense(0, 0, 0))
         self.assertFalse(self.C1.sense(0, 0.75, 0))
         self.assertFalse(self.C1.sense (0.99, 0, 0))
@@ -203,8 +205,8 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.C3.sense(1, 9, 0))
 
     def test_circle_sense_true(self):
-        """Tests sense for points that are outside the circle.
-        Direction doesn't matter. All should return True."""
+        # Tests sense for points that are outside the circle.
+        # Direction doesn't matter. All should return True.
         self.assertTrue(self.C1.sense(0, 5, 0))
         self.assertTrue(self.C1.sense(2, 2, 0))
         self.assertTrue(self.C1.sense (0.99, 1.1, 0))
@@ -217,9 +219,9 @@ class surface_tests(unittest.TestCase):
         self.assertTrue(self.C3.sense(2, 0, 0))
         self.assertTrue(self.C3.sense(1.8, 6, 0))
 
-    def test_circle_sense_boundary(self):
-        """Tests sense for points that are on the boundary and traveling
-        into or out of the circle. Moving in = False / moving out = True"""
+    def test_circle_sense_boundary_cases(self):
+        # Tests sense for points that are on the boundary and traveling
+        # into or out of the circle. Moving in = False / moving out = True
         self.assertTrue(self.C1.sense(1,0,0))
         self.assertTrue(self.C2.sense(3,4,20))
         self.assertTrue(self.C3.sense(2,10,45))
@@ -228,18 +230,17 @@ class surface_tests(unittest.TestCase):
         self.assertFalse(self.C2.sense(1,6,-90))
         self.assertFalse(self.C3.sense(-4,10,0))
 
-    def test_circle_sense_tangent(self):
-        """Tests sense for points that are on the boundary and moving
-        tangent to the circle at that point. Should return False."""
+    def test_circle_sense_tangent_cases(self):
+        # Tests sense for points that are on the boundary and moving
+        # tangent to the circle at that point. Should return False.
         self.assertFalse(self.C1.sense(1,0,90))
         self.assertFalse(self.C2.sense(-1,4,270))
         self.assertFalse(self.C3.sense(-1,13,0))
 
     def test_circle_dist_to_boundary(self):
-        """Tests distance to circle boundary. Returns None if the
-        current point and direction would not cross the circle. Otherwise,
-        returns shortest distance (since there can be two)."""
-
+        # Tests distance to circle boundary. Returns None if the
+        # current point and direction would not cross the circle. Otherwise,
+        # returns shortest distance (since there can be two).
         self.assertEqual(self.C1.dist_to_boundary(0, 0, 0),1)
         self.assertEqual(self.C1.dist_to_boundary(2, 0, 180),1)
         self.assertEqual(self.C1.dist_to_boundary(0, 2, 0),None)
@@ -338,3 +339,4 @@ class cell_geometry_tests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    

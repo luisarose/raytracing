@@ -7,12 +7,27 @@ class Surface():
     Circle, Rectangle. Can also be initialized with 6 variables (a,
     b, f, p, q, d)."""
     def __init__(self, a, b, f, p,q, d):
+
         self.a = a
+        # a is the coefficient for x^2
+        
         self.b = b
+        # b is the coefficient for y^2
+
         self.f = f
+        # f is the coefficient for xy
+
         self.p = p
+        # p is the coefficient for x
+        
         self.q = q
+        # q is the coefficient for y
+
         self.d = d
+        # d is the number added to get 0
+
+        # full equation of a quadratic surface:
+        # a*x**2 + b*y**2 + f*x*y + p*x + q*y + d = 0
         
     def get_a(self):
         return self.a
